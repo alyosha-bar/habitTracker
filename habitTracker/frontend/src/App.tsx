@@ -9,8 +9,22 @@ type Habit = {
   loggedHours: number
 }
 
+type ToDo = {
+  id: number
+  task: string
+  completed: boolean
+}
+
+const ToDos: ToDo[] = [
+  { id: 1, task: 'Buy groceries', completed: false },
+  { id: 2, task: 'Walk the dog', completed: true },
+  { id: 3, task: 'Read a book', completed: false },
+]
+
+
 function App() {
   const [habitsState, setHabitsState] = useState<Habit[]>([]);
+  const [toDosState, setToDosState] = useState<ToDo[]>(ToDos);
 
   useEffect(() => {
     // fetch habits from the backend and set the state
@@ -58,33 +72,52 @@ function App() {
 
 
   return (
-
-    <div className="app-layout">
-      {/* LEFT COLUMN: Habit Tracker */}
-      <div className="left-panel">
-        <div className="habit-tracker">
-          <h1>Habit Tracker</h1>
-          {habitsState.map(habit => (
-            <div key={habit.id} className="habit">
-              <div className="habit-text-area">
-                <h2>{habit.name}</h2>
-                <p>Target Hours: {habit.targetHours}</p>
-                <p>Logged Hours: {habit.loggedHours}</p>
+    <div className='page-container'>
+      <div className="app-layout">
+        {/* LEFT COLUMN: Habit Tracker */}
+        <div className="left-panel">
+          <div className="habit-tracker">
+            <h1>Habit Tracker - Week X </h1>
+            {habitsState.map(habit => (
+              <div key={habit.id} className="habit">
+                <div className="habit-text-area">
+                  <h2>{habit.name}</h2>
+                  <p>Target Hours: {habit.targetHours}</p>
+                  <p>Logged Hours: {habit.loggedHours}</p>
+                </div>
+                <button onClick={() => logHours(habit.id)}>Add Hour</button>
               </div>
-              <button onClick={() => logHours(habit.id)}>Add Hour</button>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Placeholder */}
+        <div className="right-panel">
+          <h3>To Do List / Notes</h3>
+          {toDosState.map(todo => (
+            <div key={todo.id} className="todo-item">
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => {
+                  setToDosState(
+                    toDosState.map(item =>
+                      item.id === todo.id
+                        ? { ...item, completed: !item.completed }
+                        : item
+                    )
+                  );
+                }}
+              />
+              <span>{todo.task}</span>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* RIGHT COLUMN: Placeholder */}
-      <div className="right-panel">
-        <h3>To Do List ? Notes ?</h3>
-      </div>
-
-      {/* BOTTOM PANEL: Placeholder */}
-      <div className="bottom-panel">
-        <h3>Dashboard for Past Weeks</h3>
+        {/* BOTTOM PANEL: Placeholder */}
+        <div className="bottom-panel">
+          <h3>Dashboard for Past Weeks</h3>
+        </div>
       </div>
     </div>
   )
