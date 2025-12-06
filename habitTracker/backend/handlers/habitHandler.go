@@ -1,0 +1,87 @@
+package handlers
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/alyosha-bar/golang-react/models"
+	"github.com/gin-gonic/gin"
+)
+
+type ManyHabitsResponse struct {
+	Habits []models.Habit `json:"habits"`
+}
+
+type HabitResponse struct {
+	Habit models.Habit `json:"habit"`
+}
+
+type HabitService interface {
+	GetAllHabits() ([]models.Habit, error)
+	GetHabitByID(id uint64) (models.Habit, error)
+	LogHour(habitID uint64) error
+}
+
+type HabitHandler struct {
+	Service HabitService
+}
+
+func NewHabitHandler(service HabitService) *HabitHandler {
+	return &HabitHandler{Service: service}
+}
+
+func (h *HabitHandler) GetHabits(c *gin.Context) {
+	// fetch all habits
+	fmt.Println("Fetching all habits")
+
+	habits, err := h.Service.GetAllHabits()
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch habits"})
+		return
+	}
+
+	c.JSON(http.StatusOK, ManyHabitsResponse{Habits: habits})
+
+}
+
+func (h *HabitHandler) GetHabit(c *gin.Context) {
+	// fetch specific habit based on habit_id
+	habit_id := c.Param("habit_id")
+
+	// cnvert habit_id to uint
+	habitID, err := strconv.ParseUint(habit_id, 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid habit ID"})
+		return
+	}
+
+	// return habit as json
+	habit, err := h.Service.GetHabitByID(habitID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch habit"})
+		return
+	}
+	c.JSON(http.StatusOK, HabitResponse{Habit: habit})
+}
+
+func (h *HabitHandler) LogHour(c *gin.Context) {
+	// get habit id and user id from request
+	habit_id := c.Param("id")
+
+	// convert habit id to uint64
+	habitID, err := strconv.ParseUint(habit_id, 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid habit ID"})
+		return
+	}
+
+	// increment hours for that entry
+	err = h.Service.LogHour(habitID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to log hour"})
+		return
+	}
+	// return simple json message
+	c.JSON(http.StatusOK, gin.H{"message": "Hour logged successfully"})
+}

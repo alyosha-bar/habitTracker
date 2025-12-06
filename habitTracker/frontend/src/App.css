@@ -1,0 +1,68 @@
+/* Layout Containers */
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  grid-template-rows: auto 200px;
+  grid-template-areas:
+    "left right"
+    "bottom bottom";
+  height: 100vh;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.left-panel {
+  grid-area: left;
+}
+
+.right-panel {
+  grid-area: right;
+  border: 1px dashed #ccc;
+  padding: 1rem;
+}
+
+.bottom-panel {
+  grid-area: bottom;
+  border: 1px dashed #ccc;
+  padding: 1rem;
+}
+
+/* Habit Tracker */
+.habit-tracker {
+  font-family: sans-serif;
+}
+
+.habit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.6rem;
+  max-width: 620px; /* keeps them smaller horizontally */
+}
+
+.habit-text-area h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.habit-text-area p {
+  margin: 0.15rem 0;
+  font-size: 0.85rem;
+}
+
+.habit button {
+  padding: 0.3rem 0.6rem;
+  background: #007bff;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.habit button:hover {
+  background: #005fcc;
+}
