@@ -12,20 +12,33 @@ func SetupRoutes(router *gin.Engine) {
 
 	// Initialise repositories
 	habitRepo := repository.NewHabitRepository(database.DB)
+	todoRepo := repository.NewTodoRepository(database.DB)
 
 	// Initialise services
 	habitService := services.NewHabitService(habitRepo)
+	todoService := services.NewTodoService(todoRepo)
 
 	// Initialise handlers
 	habitHandler := handlers.NewHabitHandler(habitService)
+	todoHandler := handlers.NewTodoHandler(todoService)
 
 	habitRoutes := router.Group("/habits")
 	{
-		habitRoutes.POST("/log/:id", habitHandler.LogHour)
+		habitRoutes.POST("/log/:id", habitHandler.LogHour) // change to PUT
 
 		habitRoutes.GET("/habits", habitHandler.GetHabits)
 
 		habitRoutes.GET("/habits/:id", habitHandler.GetHabit)
+	}
+
+	todoRoutes := router.Group("/todos")
+	{
+		// Define todo routes here
+		todoRoutes.GET("/all", todoHandler.GetAllTodos)
+
+		todoRoutes.POST("/add", todoHandler.AddTodo)
+
+		todoRoutes.PUT("/complete/:id", todoHandler.CompleteTodo)
 	}
 
 	reportRoutes := router.Group("/report")
