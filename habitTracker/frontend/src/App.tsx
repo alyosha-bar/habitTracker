@@ -136,7 +136,6 @@ function App() {
         <div className="left-panel">
           <div className="habit-tracker">
             <h1 className='title'>Habit Tracker </h1>
-            <button onClick={() => console.log(API_BASE)}> See API BASE </button>
             {habitsState.map(habit => (
               <div key={habit.id} className="habit">
                 <div className="habit-text-area">
