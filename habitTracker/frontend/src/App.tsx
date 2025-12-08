@@ -1,3 +1,4 @@
+import { API_BASE } from './api/config'
 import './App.css'
 import { useEffect, useState } from 'react'
 
@@ -22,14 +23,14 @@ function App() {
   useEffect(() => {
     // fetch habits from the backend and set the state
     const fetchHabits = async () => {
-      fetch(`/api/habits/habits`)
+      fetch(`${API_BASE}/habits/habits`)
         .then(response => response.json())
         .then(data => setHabitsState(data.habits))
         .catch(error => console.error('Error fetching habits:', error));
     }
 
     const fetchTodos = async () => {
-      fetch(`/api/todos/all`)
+      fetch(`${API_BASE}/todos/all`)
         .then(response => response.json())
         .then(data => setToDosState(data.todos))
         .catch(error => console.error('Error fetching habits:', error));
@@ -45,7 +46,7 @@ function App() {
     
 
     // make fetch request to the backend to update the logged hours for the habit with the given id
-    const response = await fetch(`/api/habits/log/${id}`, {
+    const response = await fetch(`${API_BASE}/habits/log/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +81,7 @@ function App() {
     setToDosState([...toDosState, newTask]);
 
     // Make fetch request to backend to add new To-Do item
-    const resposne = await fetch(`/api/todos/add`, {
+    const resposne = await fetch(`${API_BASE}/todos/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ function App() {
       );
     
     // Make fetch request to backend to mark To-Do item as complete
-    const response = await fetch(`/api/todos/complete/${id}`, {
+    const response = await fetch(`${API_BASE}/todos/complete/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
