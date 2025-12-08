@@ -135,7 +135,7 @@ function App() {
         {/* LEFT COLUMN: Habit Tracker */}
         <div className="left-panel">
           <div className="habit-tracker">
-            <h1 className='title'>Habit Tracker - Week X </h1>
+            <h1 className='title'>Habit Tracker </h1>
             {habitsState.map(habit => (
               <div key={habit.id} className="habit">
                 <div className="habit-text-area">
@@ -151,7 +151,7 @@ function App() {
 
         {/* RIGHT COLUMN: Placeholder */}
         <div className="right-panel">
-          <h3 className='title'>To Do List</h3>
+          <h2 className='title'>To Do List</h2>
             <form onSubmit={submitToDo} className="todo-form">
               <input 
                 type="text" 

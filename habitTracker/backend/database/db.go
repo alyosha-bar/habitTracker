@@ -18,7 +18,7 @@ func ConnectDB() {
 	// load .env
 	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
 		// Only load .env file locally
-		err := godotenv.Load("../.env")
+		err := godotenv.Load(".env")
 		if err != nil {
 			log.Println("Warning: .env file not found (expected in local dev only)")
 		}
