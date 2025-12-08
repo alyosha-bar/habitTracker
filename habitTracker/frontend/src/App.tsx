@@ -22,14 +22,14 @@ function App() {
   useEffect(() => {
     // fetch habits from the backend and set the state
     const fetchHabits = async () => {
-      fetch('http://localhost:8080/habits/habits')
+      fetch(`${import.meta.env.VITE_SERVER_URL}/habits/habits`)
         .then(response => response.json())
         .then(data => setHabitsState(data.habits))
         .catch(error => console.error('Error fetching habits:', error));
     }
 
     const fetchTodos = async () => {
-      fetch('http://localhost:8080/todos/all')
+      fetch(`${import.meta.env.VITE_SERVER_URL}/todos/all`)
         .then(response => response.json())
         .then(data => setToDosState(data.todos))
         .catch(error => console.error('Error fetching habits:', error));
@@ -45,7 +45,7 @@ function App() {
     
 
     // make fetch request to the backend to update the logged hours for the habit with the given id
-    const response = await fetch(`http://localhost:8080/habits/log/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/habits/log/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ function App() {
     setToDosState([...toDosState, newTask]);
 
     // Make fetch request to backend to add new To-Do item
-    const resposne = await fetch('http://localhost:8080/todos/add', {
+    const resposne = await fetch(`${import.meta.env.VITE_SERVER_URL}/todos/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ function App() {
       );
     
     // Make fetch request to backend to mark To-Do item as complete
-    const response = await fetch(`http://localhost:8080/todos/complete/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/todos/complete/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
