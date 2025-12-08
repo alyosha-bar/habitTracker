@@ -19,7 +19,7 @@ func main() {
 
 	// set up CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"}, // specify allowed origins
+		AllowOrigins:     []string{"https://habittracker-frontend-production.up.railway.app", "http://localhost:5173"}, // specify allowed origins
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
