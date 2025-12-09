@@ -172,9 +172,9 @@ function App() {
     console.log("deleting todo with id: " + id);
   }
 
-  const deleteHabit = async (id: number) => {
-    console.log("deleting habit with id: " + id);
-  }
+  // const deleteHabit = async (id: number) => {
+  //   console.log("deleting habit with id: " + id);
+  // }
 
 
   return (
