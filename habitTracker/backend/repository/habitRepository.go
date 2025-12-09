@@ -32,7 +32,7 @@ func (r *HabitRepository) GetHabitByID(id uint64) (models.Habit, error) {
 	return habit, result.Error
 }
 
-// Log hours for a Habit
+// Log hours for a Habit --> SLOW right now, needs optimisation
 func (r *HabitRepository) LogHour(id uint64) error {
 	var habit models.Habit
 	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id)
@@ -40,6 +40,20 @@ func (r *HabitRepository) LogHour(id uint64) error {
 		return result.Error
 	}
 	habit.LoggedHours += 1
+	r.DB.Save(&habit)
+	return nil
+}
+
+func (r *HabitRepository) MinusLogHour(id uint64) error {
+	var habit models.Habit
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	habit.LoggedHours -= 1
+	if habit.LoggedHours < 0 {
+		habit.LoggedHours = 0
+	}
 	r.DB.Save(&habit)
 	return nil
 }

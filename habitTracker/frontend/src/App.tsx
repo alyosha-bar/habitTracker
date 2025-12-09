@@ -2,6 +2,9 @@ import { API_BASE } from './api/config'
 import './App.css'
 import { useEffect, useState } from 'react'
 import HabitProgressBar from './components/HabitProgressBar'
+import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { faMinus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+
 
 
 type Habit = {
@@ -55,7 +58,7 @@ function App() {
 
     // make fetch request to the backend to update the logged hours for the habit with the given id
     const response = await fetch(`${API_BASE}/habits/log/${id}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -136,6 +139,43 @@ function App() {
     console.log('Successfully marked To-Do as complete:', data);
   }
 
+  const minusLogHours = async (id: number) => {
+
+    const response = await fetch(`${API_BASE}/habits/minuslog/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Error logging hours:', response.statusText);
+      return;
+    }
+
+    const data = await response.json();
+    console.log(data.message);
+
+    // For now, we will just update the state directly
+    setHabitsState(habitsState.map(habit => {
+      if (habit.id === id) {
+        return { ...habit, loggedHours: habit.loggedHours - 1 }
+      }
+      else {
+        return habit
+      }
+    }))
+
+  }
+
+  const deleteToDo = async (id: number) => {
+    console.log("deleting todo with id: " + id);
+  }
+
+  const deleteHabit = async (id: number) => {
+    console.log("deleting habit with id: " + id);
+  }
+
 
   return (
     <div className='page-container'>
@@ -155,7 +195,18 @@ function App() {
                     <p>Target Hours: {habit.targetHours}</p>
                     <p>Logged Hours: {habit.loggedHours}</p>
                   </div>
-                  <button onClick={() => logHours(habit.id)}>Add Hour</button>
+                  <div className="habit-buttons">
+                    <button onClick={() => minusLogHours(habit.id)}>
+                      <FontAwesomeIcon icon={faMinus} />
+                    </button>
+
+                    <button onClick={() => logHours(habit.id)}>
+                      <FontAwesomeIcon icon={faPlus} />
+                    </button>
+                    {/* <button onClick={() => deleteHabit(habit.id)}>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button> */}
+                  </div>
                 </div>
                 
                 <div className=''>
@@ -191,7 +242,9 @@ function App() {
                 />
                 <span>{todo.task}</span>
               </div>
-              <div> Bin </div>
+              <div className='icon' onClick={() => deleteToDo(todo.id)}>
+                <FontAwesomeIcon icon={faTrash} />
+              </div> 
             </div>
           ))}
         </div>

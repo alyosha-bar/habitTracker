@@ -53,7 +53,7 @@
   border-radius: 6px;
   padding: 0.75rem 1rem;
   margin-bottom: 0.6rem;
-  max-width: 620px;
+  /* max-width: 620px; */
 }
 
 .title-group {
@@ -79,7 +79,35 @@
   font-size: 0.85rem;
 }
 
-.habit button, .title-group button {
+.habit-buttons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.habit-buttons button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+  background-color: #007bff;
+  color: white;
+
+  cursor: pointer;
+  padding: 0;
+}
+ 
+
+.habit-buttons svg {
+  font-size: 0.9rem;
+}
+
+.title-group button {
   padding: 0.5rem 0.6rem;
   max-height: 40px;
   background: #007bff;
@@ -159,6 +187,12 @@
 
 .todo-item span {
   font-size: 0.9rem;
+}
+
+.icon {
+  cursor: pointer;
+  color: #888;
+  padding: 0.1rem;
 }
 
 /* Completed strike-through (optional and subtle) */

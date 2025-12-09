@@ -24,11 +24,13 @@ func SetupRoutes(router *gin.Engine) {
 
 	habitRoutes := router.Group("/habits")
 	{
-		habitRoutes.POST("/log/:id", habitHandler.LogHour) // change to PUT
+		habitRoutes.PUT("/log/:id", habitHandler.LogHour)
 
 		habitRoutes.GET("/habits", habitHandler.GetHabits)
 
 		habitRoutes.GET("/habits/:id", habitHandler.GetHabit)
+
+		habitRoutes.PUT("/minuslog/:id", habitHandler.MinusLogHour)
 	}
 
 	todoRoutes := router.Group("/todos")
@@ -39,6 +41,8 @@ func SetupRoutes(router *gin.Engine) {
 		todoRoutes.POST("/add", todoHandler.AddTodo)
 
 		todoRoutes.PUT("/complete/:id", todoHandler.CompleteTodo)
+
+		// Delete a todo
 	}
 
 	reportRoutes := router.Group("/report")

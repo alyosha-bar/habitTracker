@@ -21,6 +21,7 @@ type HabitService interface {
 	GetAllHabits() ([]models.Habit, error)
 	GetHabitByID(id uint64) (models.Habit, error)
 	LogHour(habitID uint64) error
+	MinusLogHour(habitID uint64) error
 }
 
 type HabitHandler struct {
@@ -84,4 +85,24 @@ func (h *HabitHandler) LogHour(c *gin.Context) {
 	}
 	// return simple json message
 	c.JSON(http.StatusOK, gin.H{"message": "Hour logged successfully"})
+}
+
+func (h *HabitHandler) MinusLogHour(c *gin.Context) {
+	// get habit id and user id from request
+	habit_id := c.Param("id")
+	// convert habit id to uint64
+	habitID, err := strconv.ParseUint(habit_id, 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid habit ID"})
+		return
+	}
+
+	// decrement hours for that entry
+	err = h.Service.MinusLogHour(habitID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to minus log hour"})
+		return
+	}
+	// return simple json message
+	c.JSON(http.StatusOK, gin.H{"message": "Hour removed successfully"})
 }

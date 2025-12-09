@@ -27,3 +27,7 @@ func (s *HabitService) GetHabitByID(id uint64) (models.Habit, error) {
 func (s *HabitService) LogHour(id uint64) error {
 	return s.Repo.LogHour(id)
 }
+
+func (s *HabitService) MinusLogHour(id uint64) error {
+	return s.Repo.MinusLogHour(id)
+}
