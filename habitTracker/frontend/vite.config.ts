@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd());
+  const env = loadEnv(mode, process.cwd())
 
   return {
     plugins: [react()],
@@ -12,17 +12,17 @@ export default defineConfig(({ mode }) => {
         mode === 'development'
           ? {
               '/api': {
-                target: env.VITE_SERVER_URL,
+                target: String(env.VITE_SERVER_URL), // ✨ usually the missing fix
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, ''),
+                rewrite: (p) => p.replace(/^\/api/, ''),
               },
             }
           : undefined,
     },
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
+        '@': path.resolve(__dirname, './src'),
       },
     },
-    }
-});
+  }
+})
