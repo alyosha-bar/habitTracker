@@ -16,7 +16,7 @@ func NewHabitRepository(db *gorm.DB) *HabitRepository {
 // Get all Habits
 func (r *HabitRepository) GetAllHabits() ([]models.Habit, error) {
 	var habits []models.Habit
-	result := r.DB.Find(&habits)
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours").Find(&habits)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -25,7 +25,7 @@ func (r *HabitRepository) GetAllHabits() ([]models.Habit, error) {
 	return habits, result.Error
 }
 
-// Get a specific Habit
+// Get a specific Habit -- not used currently
 func (r *HabitRepository) GetHabitByID(id uint64) (models.Habit, error) {
 	var habit models.Habit
 	result := r.DB.First(&habit, id)
@@ -35,7 +35,7 @@ func (r *HabitRepository) GetHabitByID(id uint64) (models.Habit, error) {
 // Log hours for a Habit
 func (r *HabitRepository) LogHour(id uint64) error {
 	var habit models.Habit
-	result := r.DB.First(&habit, id)
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id)
 	if result.Error != nil {
 		return result.Error
 	}

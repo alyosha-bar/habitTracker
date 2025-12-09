@@ -15,7 +15,7 @@ func NewTodoRepository(db *gorm.DB) *TodoRepository {
 
 func (r *TodoRepository) GetAllTodos() ([]models.Todo, error) {
 	var todos []models.Todo
-	result := r.DB.Find(&todos)
+	result := r.DB.Select("id", "task", "completed").Find(&todos)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -32,7 +32,7 @@ func (r *TodoRepository) AddToDo(todo models.Todo) error {
 // mark a Todo as completed
 func (r *TodoRepository) CompleteToDo(id uint64) error {
 	var todo models.Todo
-	result := r.DB.First(&todo, id)
+	result := r.DB.Select("id", "task", "completed").First(&todo, id)
 	if result.Error != nil {
 		return result.Error
 	}
