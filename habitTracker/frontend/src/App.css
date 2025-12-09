@@ -56,6 +56,12 @@
   max-width: 620px;
 }
 
+.title-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .habit-text-area {
   display: flex;
   width: 100%;
@@ -73,8 +79,8 @@
   font-size: 0.85rem;
 }
 
-.habit button {
-  padding: 0.3rem 0.6rem;
+.habit button, .title-group button {
+  padding: 0.5rem 0.6rem;
   max-height: 40px;
   background: #007bff;
   border: none;
@@ -135,6 +141,7 @@
 
 .todo-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   border: 1px solid #ddd;
   border-radius: 6px;

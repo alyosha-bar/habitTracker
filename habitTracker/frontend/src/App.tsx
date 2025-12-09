@@ -21,6 +21,8 @@ function App() {
   const [habitsState, setHabitsState] = useState<Habit[]>([]);
   const [toDosState, setToDosState] = useState<ToDo[]>([]);
   const [newTodo, setNewToDo] = useState<string>('');
+  const [completedCount, setCompletedCount] = useState<number>(0);
+
 
   useEffect(() => {
     // fetch habits from the backend and set the state
@@ -42,6 +44,10 @@ function App() {
     fetchHabits();
   }, [])
 
+  useEffect(() => {
+    const count = toDosState.filter(todo => todo.completed).length;
+    setCompletedCount(count);
+  }, [toDosState]);
 
 
   const logHours = async (id: number) => {
@@ -137,7 +143,10 @@ function App() {
         {/* LEFT COLUMN: Habit Tracker */}
         <div className="left-panel">
           <div className="habit-tracker">
-            <h1 className='title'>Habit Tracker </h1>
+            <div className='title-group'>
+              <h1 className='title'>Habit Tracker </h1>
+              <button> Add Habit </button>
+            </div>
             {habitsState.map(habit => (
               <div key={habit.id} className="habit">
                 <div className="habit-text-area">
@@ -160,7 +169,7 @@ function App() {
 
         {/* RIGHT COLUMN: Placeholder */}
         <div className="right-panel">
-          <h2 className='title'>To Do List</h2>
+          <h2 className='title'>To Do List - {completedCount}/{toDosState.length}</h2>
             <form onSubmit={submitToDo} className="todo-form">
               <input 
                 type="text" 
@@ -172,14 +181,17 @@ function App() {
             </form>
           {toDosState.map(todo => (
             <div key={todo.id} className="todo-item">
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => {
-                  markToDoComplete(todo.id);
-                }}
-              />
-              <span>{todo.task}</span>
+              <div>
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => {
+                    markToDoComplete(todo.id);
+                  }}
+                />
+                <span>{todo.task}</span>
+              </div>
+              <div> Bin </div>
             </div>
           ))}
         </div>
