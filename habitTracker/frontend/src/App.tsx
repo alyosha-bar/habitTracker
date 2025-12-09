@@ -1,6 +1,8 @@
 import { API_BASE } from './api/config'
 import './App.css'
 import { useEffect, useState } from 'react'
+import HabitProgressBar from './components/HabitProgressBar'
+
 
 type Habit = {
   id: number
@@ -25,14 +27,14 @@ function App() {
     const fetchHabits = async () => {
       fetch(`${API_BASE}/habits/habits`)
         .then(response => response.json())
-        .then(data => setHabitsState(data.habits))
+        .then((data) => setHabitsState(data.habits.sort((a: Habit, b: Habit) => a.id - b.id)))
         .catch(error => console.error('Error fetching habits:', error));
     }
 
     const fetchTodos = async () => {
       fetch(`${API_BASE}/todos/all`)
         .then(response => response.json())
-        .then(data => setToDosState(data.todos))
+        .then(data => setToDosState(data.todos.sort((a: ToDo, b: ToDo) => a.id - b.id)))
         .catch(error => console.error('Error fetching habits:', error));
     }
 
@@ -139,11 +141,18 @@ function App() {
             {habitsState.map(habit => (
               <div key={habit.id} className="habit">
                 <div className="habit-text-area">
-                  <h2>{habit.name}</h2>
-                  <p>Target Hours: {habit.targetHours}</p>
-                  <p>Logged Hours: {habit.loggedHours}</p>
+                  <div>
+                    <h2>{habit.name}</h2>
+                    <p>Target Hours: {habit.targetHours}</p>
+                    <p>Logged Hours: {habit.loggedHours}</p>
+                  </div>
+                  <button onClick={() => logHours(habit.id)}>Add Hour</button>
                 </div>
-                <button onClick={() => logHours(habit.id)}>Add Hour</button>
+                
+                <div className=''>
+                  <HabitProgressBar loggedHours={habit.loggedHours} targetHours={habit.targetHours} />
+                </div>
+                
               </div>
             ))}
           </div>
