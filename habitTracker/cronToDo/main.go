@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ToDo struct {
+type Todo struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	Task      string `json:"task"`
 	Completed bool   `json:"completed"`
@@ -39,11 +39,11 @@ func main() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("59 59 23 * * *", func() {
+	c.AddFunc("59 52 11 * * *", func() {
 		log.Println("Runs every day at 23:59:59")
 
 		// clear completed to-dos
-		if err := db.Where("completed = ?", true).Delete(&ToDo{}).Error; err != nil {
+		if err := db.Where("completed = ?", true).Delete(&Todo{}).Error; err != nil {
 			log.Println("Error clearing completed to-dos:", err)
 		}
 	})
