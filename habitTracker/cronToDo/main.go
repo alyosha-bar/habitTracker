@@ -39,13 +39,15 @@ func main() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("59 52 11 * * *", func() {
+	c.AddFunc("59 59 23 * * *", func() {
 		log.Println("Runs every day at 23:59:59")
 
 		// clear completed to-dos
 		if err := db.Where("completed = ?", true).Delete(&Todo{}).Error; err != nil {
 			log.Println("Error clearing completed to-dos:", err)
 		}
+
+		log.Println("Completed to-dos cleared.")
 	})
 
 	c.Start()
