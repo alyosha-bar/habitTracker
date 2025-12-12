@@ -31,6 +31,8 @@ func SetupRoutes(router *gin.Engine) {
 		habitRoutes.GET("/habits/:id", habitHandler.GetHabit)
 
 		habitRoutes.PUT("/minuslog/:id", habitHandler.MinusLogHour)
+
+		habitRoutes.POST("/create", habitHandler.CreateHabit)
 	}
 
 	todoRoutes := router.Group("/todos")

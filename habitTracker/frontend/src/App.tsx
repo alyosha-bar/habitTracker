@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import HabitProgressBar from './components/HabitProgressBar'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faMinus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import AddHabitModal from './components/AddHabitModal'
 
 
 
@@ -25,6 +26,7 @@ function App() {
   const [toDosState, setToDosState] = useState<ToDo[]>([]);
   const [newTodo, setNewToDo] = useState<string>('');
   const [completedCount, setCompletedCount] = useState<number>(0);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -141,6 +143,11 @@ function App() {
 
   const minusLogHours = async (id: number) => {
 
+    if (habitsState.find(habit => habit.id === id)?.loggedHours === 0) {
+      alert("Logged hours already at 0, cannot decrement further.");
+      return;
+    }
+
     const response = await fetch(`${API_BASE}/habits/minuslog/${id}`, {
       method: 'PUT',
       headers: {
@@ -176,6 +183,34 @@ function App() {
   //   console.log("deleting habit with id: " + id);
   // }
 
+  // pass into modal
+  const createHabit = async (name: string, targetHours: number) => {
+
+    console.log("creating new habit");
+
+    const response = await fetch(`${API_BASE}/habits/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: name,
+        targetHours: targetHours,
+        loggedHours: 0,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Error creating habit:', response.statusText);
+      return;
+    }
+
+    const data = await response.json();
+    console.log(data.message);
+
+    setHabitsState([...habitsState, data.newHabit]);
+  }
+
 
   return (
     <div className='page-container'>
@@ -185,7 +220,7 @@ function App() {
           <div className="habit-tracker">
             <div className='title-group'>
               <h1 className='title'>Habit Tracker </h1>
-              <button> Add Habit </button>
+              <button onClick={() => setModalOpen(true)}> Add Habit </button>
             </div>
             {habitsState.map(habit => (
               <div key={habit.id} className="habit">
@@ -251,8 +286,8 @@ function App() {
 
         {/* BOTTOM PANEL: Placeholder */}
         {/* <div className="bottom-panel">
-          <h3>Dashboard for Past Weeks</h3>
         </div> */}
+        <AddHabitModal isOpen={modalOpen} onClose={() => {setModalOpen(false)}} onSubmit={createHabit} />
       </div>
     </div>
   )

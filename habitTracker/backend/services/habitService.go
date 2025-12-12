@@ -31,3 +31,7 @@ func (s *HabitService) LogHour(id uint64) error {
 func (s *HabitService) MinusLogHour(id uint64) error {
 	return s.Repo.MinusLogHour(id)
 }
+
+func (s *HabitService) CreateHabit(habit models.Habit) (models.Habit, error) {
+	return s.Repo.CreateHabit(habit)
+}

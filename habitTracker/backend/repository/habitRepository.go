@@ -50,10 +50,21 @@ func (r *HabitRepository) MinusLogHour(id uint64) error {
 	if result.Error != nil {
 		return result.Error
 	}
+
+	if habit.LoggedHours == 0 {
+		return nil
+	}
+
 	habit.LoggedHours -= 1
 	if habit.LoggedHours < 0 {
 		habit.LoggedHours = 0
 	}
 	r.DB.Save(&habit)
 	return nil
+}
+
+// Create a new Habit
+func (r *HabitRepository) CreateHabit(habit models.Habit) (models.Habit, error) {
+	result := r.DB.Create(&habit)
+	return habit, result.Error
 }

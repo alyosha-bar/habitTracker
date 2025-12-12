@@ -22,6 +22,7 @@ type HabitService interface {
 	GetHabitByID(id uint64) (models.Habit, error)
 	LogHour(habitID uint64) error
 	MinusLogHour(habitID uint64) error
+	CreateHabit(habit models.Habit) (models.Habit, error)
 }
 
 type HabitHandler struct {
@@ -105,4 +106,27 @@ func (h *HabitHandler) MinusLogHour(c *gin.Context) {
 	}
 	// return simple json message
 	c.JSON(http.StatusOK, gin.H{"message": "Hour removed successfully"})
+}
+
+// ISSUES WITH THIS ROUTE
+func (h *HabitHandler) CreateHabit(c *gin.Context) {
+	var newHabit models.Habit
+
+	// bind json to newHabit
+	if err := c.ShouldBindJSON(&newHabit); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	// create new habit
+	habit, err := h.Service.CreateHabit(newHabit)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to create habit"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "Habit created successfully",
+		"newHabit": habit,
+	})
 }
