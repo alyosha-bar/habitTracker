@@ -21,6 +21,13 @@ type ToDo = {
   completed: boolean
 }
 
+// move to types file later
+export type ToastType = {
+  id: number;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
 function App() {
   const [habitsState, setHabitsState] = useState<Habit[]>([]);
   const [toDosState, setToDosState] = useState<ToDo[]>([]);
