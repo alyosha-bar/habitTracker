@@ -68,3 +68,8 @@ func (r *HabitRepository) CreateHabit(habit models.Habit) (models.Habit, error) 
 	result := r.DB.Create(&habit)
 	return habit, result.Error
 }
+
+func (r *HabitRepository) DeleteHabit(id uint64) error {
+	result := r.DB.Delete(&models.Habit{}, id)
+	return result.Error
+}

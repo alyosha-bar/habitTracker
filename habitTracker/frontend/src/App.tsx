@@ -177,11 +177,41 @@ function App() {
 
   const deleteToDo = async (id: number) => {
     console.log("deleting todo with id: " + id);
+
+    const response = await fetch(`${API_BASE}/todos/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Error deleting todo:', response.statusText);
+      return;
+    }
+
+    // remove from state
+    setToDosState(toDosState.filter(todo => todo.id !== id));
   }
 
-  // const deleteHabit = async (id: number) => {
-  //   console.log("deleting habit with id: " + id);
-  // }
+  const deleteHabit = async (id: number) => {
+    console.log("deleting habit with id: " + id);
+
+    const response = await fetch(`${API_BASE}/habits/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Error deleting habit:', response.statusText);
+      return;
+    }
+
+    // remove from state
+    setHabitsState(habitsState.filter(habit => habit.id !== id));
+  }
 
   // pass into modal
   const createHabit = async (name: string, targetHours: number) => {
@@ -238,9 +268,9 @@ function App() {
                     <button onClick={() => logHours(habit.id)}>
                       <FontAwesomeIcon icon={faPlus} />
                     </button>
-                    {/* <button onClick={() => deleteHabit(habit.id)}>
+                    <button onClick={() => deleteHabit(habit.id)}>
                       <FontAwesomeIcon icon={faTrash} />
-                    </button> */}
+                    </button>
                   </div>
                 </div>
                 

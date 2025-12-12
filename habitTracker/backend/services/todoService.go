@@ -24,3 +24,7 @@ func (s *TodoService) AddToDo(todo models.Todo) error {
 func (s *TodoService) CompleteToDo(id uint64) error {
 	return s.Repo.CompleteToDo(id)
 }
+
+func (s *TodoService) DeleteToDo(id uint64) error {
+	return s.Repo.DeleteToDo(id)
+}

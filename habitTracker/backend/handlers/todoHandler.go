@@ -16,6 +16,7 @@ type TodoService interface {
 	GetAllTodos() ([]models.Todo, error)
 	AddToDo(models.Todo) error
 	CompleteToDo(id uint64) error
+	DeleteToDo(id uint64) error
 }
 
 type TodoHandler struct {
@@ -68,4 +69,22 @@ func (h *TodoHandler) CompleteTodo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Todo marked as completed"})
+}
+
+func (h *TodoHandler) DeleteTodo(c *gin.Context) {
+	idParam := c.Param("id")
+
+	id, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
+		return
+	}
+
+	err = h.Service.DeleteToDo(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete todo"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Todo deleted successfully"})
 }

@@ -40,3 +40,9 @@ func (r *TodoRepository) CompleteToDo(id uint64) error {
 	r.DB.Save(&todo)
 	return nil
 }
+
+// delete a Todo
+func (r *TodoRepository) DeleteToDo(id uint64) error {
+	result := r.DB.Delete(&models.Todo{}, id)
+	return result.Error
+}

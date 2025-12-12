@@ -23,6 +23,7 @@ type HabitService interface {
 	LogHour(habitID uint64) error
 	MinusLogHour(habitID uint64) error
 	CreateHabit(habit models.Habit) (models.Habit, error)
+	DeleteHabit(id uint64) error
 }
 
 type HabitHandler struct {
@@ -129,4 +130,22 @@ func (h *HabitHandler) CreateHabit(c *gin.Context) {
 		"message":  "Habit created successfully",
 		"newHabit": habit,
 	})
+}
+
+func (h *HabitHandler) DeleteHabit(c *gin.Context) {
+	habit_id := c.Param("id")
+
+	habitID, err := strconv.ParseUint(habit_id, 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid habit ID"})
+		return
+	}
+
+	err = h.Service.DeleteHabit(habitID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete habit"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Habit deleted successfully"})
 }

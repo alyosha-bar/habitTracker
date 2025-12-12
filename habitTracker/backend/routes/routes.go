@@ -33,6 +33,8 @@ func SetupRoutes(router *gin.Engine) {
 		habitRoutes.PUT("/minuslog/:id", habitHandler.MinusLogHour)
 
 		habitRoutes.POST("/create", habitHandler.CreateHabit)
+
+		habitRoutes.DELETE("/delete/:id", habitHandler.DeleteHabit)
 	}
 
 	todoRoutes := router.Group("/todos")
@@ -45,6 +47,7 @@ func SetupRoutes(router *gin.Engine) {
 		todoRoutes.PUT("/complete/:id", todoHandler.CompleteTodo)
 
 		// Delete a todo
+		todoRoutes.DELETE("/delete/:id", todoHandler.DeleteTodo)
 	}
 
 	reportRoutes := router.Group("/report")
