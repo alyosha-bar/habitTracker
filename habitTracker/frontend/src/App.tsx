@@ -5,6 +5,7 @@ import HabitProgressBar from './components/HabitProgressBar'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faMinus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import AddHabitModal from './components/AddHabitModal'
+import DailyHabits from './components/DailyHabits'
 
 
 
@@ -246,7 +247,7 @@ function App() {
     <div className='page-container'>
       <div className="app-layout">
         {/* LEFT COLUMN: Habit Tracker */}
-        <div className="left-panel">
+        {/* <div className="left-panel">
           <div className="habit-tracker">
             <div className='title-group'>
               <h1 className='title'>Habit Tracker </h1>
@@ -281,7 +282,7 @@ function App() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* RIGHT COLUMN: Placeholder */}
         <div className="right-panel">
@@ -318,6 +319,7 @@ function App() {
         {/* <div className="bottom-panel">
         </div> */}
         <AddHabitModal isOpen={modalOpen} onClose={() => {setModalOpen(false)}} onSubmit={createHabit} />
+        <DailyHabits />
       </div>
     </div>
   )
