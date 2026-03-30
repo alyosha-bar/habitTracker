@@ -7,8 +7,8 @@ interface HabitEntry {
 }
 
 interface Snapshot {
-  date: string;
-  habits: HabitEntry[];
+  Date: string;
+  Habits: HabitEntry[];
 }
 
 interface Habit {
@@ -23,67 +23,79 @@ interface ChartDataPoint {
   isToday: boolean;
 }
 
-const pastSnapshots: Snapshot[] = [
-  { date: "2026-01-01", habits: [{ id: 1, completed: true }, { id: 2, completed: false }] },
-  { date: "2026-01-02", habits: [{ id: 1, completed: true }, { id: 2, completed: true }] },
-  { date: "2026-01-03", habits: [{ id: 1, completed: false }, { id: 2, completed: true }] },
-];
+// const pastSnapshots: Snapshot[] = [
+//   { date: "2026-01-01", habits: [{ id: 1, completed: true }, { id: 2, completed: false }] },
+//   { date: "2026-01-02", habits: [{ id: 1, completed: true }, { id: 2, completed: true }] },
+//   { date: "2026-01-03", habits: [{ id: 1, completed: false }, { id: 2, completed: true }] },
+// ];
 
-const initialHabits: Habit[] = [
-  { id: 1, name: "Drink Water", completed: false },
-  { id: 2, name: "Exercise", completed: false },
-  { id: 3, name: "Read", completed: false },
-  { id: 4, name: "LeetCode", completed: false },
-];
+// const initialHabits: Habit[] = [
+//   { id: 1, name: "Drink Water", completed: false },
+//   { id: 2, name: "Exercise", completed: false },
+//   { id: 3, name: "Read", completed: false },
+//   { id: 4, name: "LeetCode", completed: false },
+// ];
 
-const maxHabits: number = initialHabits.length;
 
-const todayStr: string = new Date().toISOString().split("T")[0];
-const todayCompleted: number = initialHabits.filter((h) => h.completed).length;
 
-// Fetch from backend
-// New Cron for Daily habits
-// DB table for daily habit snapshots with columns: id, date, habit_id, completed
-
-// Need to update this so that the it updates live with the toggling of habits, currently it only reflects the initial state of habits and doesn't update when habits are toggled
-
-const data: ChartDataPoint[] = [
-  ...pastSnapshots.map((s) => ({
-    date: s.date.slice(5),
-    completed: s.habits.filter((h) => h.completed).length,
-    isToday: false,
-  })),
-  {
-    date: todayStr.slice(5),
-    completed: todayCompleted,
-    isToday: true,
-  },
-];
-
-const CustomDot = (props: DotProps & { payload?: ChartDataPoint }) => {
-  const { cx, cy, payload } = props;
-  if (!payload?.isToday) return null;
-  return <circle cx={cx} cy={cy} r={5} fill="#7F77DD" stroke="#fff" strokeWidth={2} />;
-};
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: { value: number; payload: ChartDataPoint }[];
-  label?: string;
+interface HabitChartProps {
+  todaysHabits: Habit[];
+  pastHabits: Snapshot[];
 }
 
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-  if (!active || !payload?.length) return null;
-  const isToday = payload[0]?.payload?.isToday;
-  return (
-    <div style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, padding: "8px 12px", fontSize: 13 }}>
-      <p style={{ margin: "0 0 2px", color: "var(--color-text-secondary)" }}>{isToday ? `${label} (today)` : label}</p>
-      <p style={{ margin: 0, fontWeight: 500, color: "var(--color-text-primary)" }}>{payload[0].value} / {maxHabits} habits</p>
-    </div>
-  );
-};
+export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps) {
 
-export default function HabitChart() {
+  const maxHabits: number = todaysHabits.length;
+
+  const todayStr: string = new Date().toISOString().split("T")[0];
+  const todayCompleted: number = todaysHabits.filter((h) => h.completed).length;
+
+  // Fetch from backend
+  // New Cron for Daily habits
+  // DB table for daily habit snapshots with columns: id, date, habit_id, completed
+
+  // Need to update this so that the it updates live with the toggling of habits, currently it only reflects the initial state of habits and doesn't update when habits are toggled
+
+  // Future: Toggle between week/month view, show past 7 days or past 30 days in the graph, and update the x-axis ticks accordingly. For month view, can also show a tooltip with the specific date when hovering over each point in the graph.
+
+
+  const data: ChartDataPoint[] = [
+    ...pastHabits.map((s) => ({
+      date: s.Date.slice(5),
+      completed: s.Habits.filter((h) => h.completed).length,
+      isToday: false,
+    })),
+    {
+      date: todayStr.slice(5),
+      completed: todayCompleted,
+      isToday: true,
+    },
+  ];
+
+  const CustomDot = (props: DotProps & { payload?: ChartDataPoint }) => {
+    const { cx, cy, payload } = props;
+    if (!payload?.isToday) return null;
+    return <circle cx={cx} cy={cy} r={5} fill="#7F77DD" stroke="#fff" strokeWidth={2} />;
+  };
+
+  interface CustomTooltipProps {
+    active?: boolean;
+    payload?: { value: number; payload: ChartDataPoint }[];
+    label?: string;
+  }
+
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+    if (!active || !payload?.length) return null;
+    const isToday = payload[0]?.payload?.isToday;
+    return (
+      <div style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, padding: "8px 12px", fontSize: 13 }}>
+        <p style={{ margin: "0 0 2px", color: "var(--color-text-secondary)" }}>{isToday ? `${label} (today)` : label}</p>
+        <p style={{ margin: 0, fontWeight: 500, color: "var(--color-text-primary)" }}>{payload[0].value} / {maxHabits} habits</p>
+      </div>
+    );
+  };
+
+
   return (
     <div style={{ padding: "1.5rem 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1.5rem" }}>

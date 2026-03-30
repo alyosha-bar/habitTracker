@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import HabitChart from "./HabitChart";
+import { API_BASE } from "../api/config";
 
 type Habit = {
   id: number;
@@ -13,81 +14,80 @@ type SnapshotHabit = {
 };
 
 type Snapshot = {
-  date: string; // YYYY-MM-DD
-  habits: SnapshotHabit[];
+  Date: string; // YYYY-MM-DD
+  Habits: SnapshotHabit[];
 };
 
-// Mock: past daily snapshots for this month
-const pastSnapshots: Snapshot[] = [
-  {
-    date: "2026-01-01",
-    habits: [
-      { id: 1, completed: true },
-      { id: 2, completed: false },
-    ],
-  },
-  {
-    date: "2026-01-02",
-    habits: [
-      { id: 1, completed: true },
-      { id: 2, completed: true },
-    ],
-  },
-  {
-    date: "2026-01-03",
-    habits: [
-      { id: 1, completed: false },
-      { id: 2, completed: true },
-    ],
-  },
-];
-
-// Mock: today’s daily habits list
-const initialHabits: Habit[] = [
-  { id: 1, name: "Drink Water", completed: false },
-  { id: 2, name: "Exercise", completed: false },
-  { id: 3, name: "Read", completed: false },
-  { id: 4, name: "LeetCode", completed: false },
-];
 
 type GraphRange = "week" | "month";
 
 const DailyHabits = () => {
-    const [habits, setHabits] = useState<Habit[]>(initialHabits);
+    const [habits, setHabits] = useState<Habit[]>([]);
     const [graphRange, setGraphRange] = useState<GraphRange>("week");
 
-    const [pastHabits, setPastHabits] = useState<Snapshot[]>(pastSnapshots);
 
-    const toggleHabit = (id: number) => {
+    const [pastHabits, setPastHabits] = useState<Snapshot[]>([]);
+
+
+    // fetch daily habits
+    useEffect(() => {
+        // Simulate an API call to fetch daily habits
+        const fetchDailyHabits = async () => {
+            // Replace this with your actual API call
+            const response = await fetch(`${API_BASE}/habits/daily`);
+            const data = await response.json();
+            setHabits(data.dailyHabits);
+        };
+
+        const fetchPastHabits = async () => {
+            const response = await fetch(`${API_BASE}/habits/daily/snapshots`);
+            const data = await response.json();
+            setPastHabits(data.snapshots);
+        };
+
+        fetchDailyHabits();
+        fetchPastHabits();
+    }, []);
+
+    const toggleHabit = async (id: number) => {
         setHabits((prev) =>
             prev.map((h) => (h.id === id ? { ...h, completed: !h.completed } : h))
         );
-    };
-    
-    const today = new Date();
-    const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
 
-    // Combine past snapshots + “today” synthesized from current state
-    const allSnapshots: Snapshot[] = useMemo(() => {
-    const todaySnapshot: Snapshot = {
-        date: todayStr,
-        habits: habits.map((h) => ({ id: h.id, completed: h.completed })),
-    };
+        // API call
+        const response = await fetch(`${API_BASE}/habits/daily/${id}?completed=${!habits.find((h) => h.id === id)?.completed}`, {
+            method: "PUT",
+        });
 
-    // If there were a real backend we’d merge on keys; for now, just append
-    return [...pastSnapshots, todaySnapshot];
-    }, [habits, todayStr]);
+        if (!response.ok) {
+            console.error("Failed to update habit");
+            // Revert state change on failure
+            setHabits((prev) =>
+                prev.map((h) => (h.id === id ? { ...h, completed: habits.find((h) => h.id === id)?.completed || false } : h))
+            );
+        }
+
+        // handle data
+        const data = await response.json();
+        // Do something with the updated habit data if needed
+        
+        console.log("Updated habit:", data);
+        return
+
+    };
 
 
     return (
         <div className="daily-habits-container">
         <div className="daily-habits-header">
             <h2>Daily Habits</h2>
+            <button onClick={() => console.log(habits)}>Log Habits </button>
+            <button onClick={() => console.log(pastHabits)}>Log Past Habits </button>
         </div>
 
         {/* Simple list of habits with a completed toggle */}
             <div>
-                {habits.map((habit) => (
+                {habits && habits.map((habit) => (
                 <div key={habit.id} className="todo-item">
                     <div>
                     <input
@@ -102,7 +102,9 @@ const DailyHabits = () => {
             </div>
 
             {/* Graph section */}
-            <HabitChart />
+            {habits && pastHabits && (
+                <HabitChart todaysHabits={habits} pastHabits={pastHabits} />
+            )}
 
 
 

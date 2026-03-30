@@ -73,3 +73,36 @@ func (r *HabitRepository) DeleteHabit(id uint64) error {
 	result := r.DB.Delete(&models.Habit{}, id)
 	return result.Error
 }
+
+// Daily Habits Repository function
+func (r *HabitRepository) MarkDailyHabit(id uint64, completed bool) error {
+	var habit models.DailyHabit
+	result := r.DB.Select("id", "name", "completed").First(&habit, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	habit.Completed = completed
+	r.DB.Save(&habit)
+	return nil
+}
+
+func (r *HabitRepository) GetAllDailyHabits() ([]models.DailyHabit, error) {
+	var dailyHabits []models.DailyHabit
+	result := r.DB.Select("id", "name", "completed").Find(&dailyHabits)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return dailyHabits, result.Error
+}
+
+func (r *HabitRepository) GetDailyHabitSnapshots() ([]models.DailySnapshot, error) {
+	var snapshots []models.DailySnapshot
+	result := r.DB.Select("id", "date", "habits").Find(&snapshots)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return snapshots, nil
+}

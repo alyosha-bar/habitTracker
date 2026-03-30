@@ -39,3 +39,16 @@ func (s *HabitService) CreateHabit(habit models.Habit) (models.Habit, error) {
 func (r *HabitService) DeleteHabit(id uint64) error {
 	return r.Repo.DeleteHabit(id)
 }
+
+// Daily Habits
+func (s *HabitService) MarkDailyHabit(id uint64, completed bool) error {
+	return s.Repo.MarkDailyHabit(id, completed)
+}
+
+func (s *HabitService) GetAllDailyHabits() ([]models.DailyHabit, error) {
+	return s.Repo.GetAllDailyHabits()
+}
+
+func (s *HabitService) GetDailyHabitSnapshots() ([]models.DailySnapshot, error) {
+	return s.Repo.GetDailyHabitSnapshots()
+}
