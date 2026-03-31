@@ -18,7 +18,7 @@ type Todo struct {
 	Completed bool   `json:"completed"`
 }
 
-type Habit struct {
+type DailyHabit struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	Name      string `json:"name"`
 	Completed bool   `json:"completed"`
@@ -72,7 +72,7 @@ func main() {
 		}
 
 		// Example: Fetch habits and their status, convert to JSON, and save to DailyHabitSnapshot
-		var habits []Habit
+		var habits []DailyHabit
 		if err := db.Find(&habits).Error; err != nil {
 			log.Println("Error fetching habits:", err)
 			return
