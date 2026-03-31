@@ -175,8 +175,6 @@
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
-  width: fit-content;
-  min-width: 200px;
   max-width: 420px; /* same width as habits */
 }
 
@@ -382,6 +380,37 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.4rem;
+}
+
+.daily-habit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+  width: fit-content;
+  min-width: 200px;
+  max-width: 420px; /* same width as habits */
+}
+
+.daily-habit-item input[type="checkbox"] {
+  margin-right: 0.6rem;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.daily-habit-item span {
+  font-size: 0.9rem;
+}
+
+
+/* Completed strike-through (optional and subtle) */
+.daily-habit-item input[type="checkbox"]:checked + span {
+  text-decoration: line-through;
+  color: #777;
 }
 
 .daily-habit-layout {

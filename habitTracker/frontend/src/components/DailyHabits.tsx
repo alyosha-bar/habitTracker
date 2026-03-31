@@ -146,7 +146,7 @@ const DailyHabits = () => {
         {/* Simple list of habits with a completed toggle */}
             <div className="daily-habits">
                 {habits && habits.map((habit) => (
-                <div key={habit.id} className="todo-item">
+                <div key={habit.id} className="daily-habit-item">
                     <div className="daily-habit-layout">
                         <div>
                             <input
