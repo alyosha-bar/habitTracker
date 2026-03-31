@@ -24,6 +24,9 @@ type HabitService interface {
 	MinusLogHour(habitID uint64) error
 	CreateHabit(habit models.Habit) (models.Habit, error)
 	DeleteHabit(id uint64) error
+	MarkDailyHabit(id uint64, completed bool) error
+	GetAllDailyHabits() ([]models.DailyHabit, error)
+	GetDailyHabitSnapshots() ([]models.DailySnapshot, error)
 }
 
 type HabitHandler struct {
@@ -148,4 +151,48 @@ func (h *HabitHandler) DeleteHabit(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Habit deleted successfully"})
+}
+
+// Daily Habits
+func (h *HabitHandler) MarkDailyHabit(c *gin.Context) {
+	habit_id := c.Param("id")
+
+	habitID, err := strconv.ParseUint(habit_id, 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid habit ID"})
+		return
+	}
+
+	completed := c.Query("completed") == "true"
+
+	err = h.Service.MarkDailyHabit(habitID, completed)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to mark daily habit"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Daily habit marked successfully"})
+
+}
+
+func (h *HabitHandler) GetDailyHabits(c *gin.Context) {
+	dailyHabits, err := h.Service.GetAllDailyHabits()
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch daily habits"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"dailyHabits": dailyHabits})
+}
+
+func (h *HabitHandler) GetDailyHabitSnapshots(c *gin.Context) {
+	snapshots, err := h.Service.GetDailyHabitSnapshots()
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch daily habit snapshots"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"snapshots": snapshots})
 }

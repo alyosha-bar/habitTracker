@@ -331,3 +331,132 @@
 .modal form button[type="submit"]:hover {
   background: #2e76f6;
 }
+
+
+/* Daily Habits Grid */
+.habit-grid {
+  padding-bottom: 100px;
+}
+
+.daily-habits-container {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  width: 650px;
+  height: fit-content;
+}
+
+.daily-habits-header {
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.daily-habits-tabs {
+  display: inline-flex;
+  border-radius: 999px;
+  background: #e8f0ff;
+  padding: 0.15rem;
+}
+
+.daily-habits-tab {
+  border: none;
+  background: transparent;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 999px;
+  color: #2850a7;
+}
+
+.daily-habits-tab.active {
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(40, 80, 167, 0.2);
+}
+
+.habit-row {
+  display: contents;
+}
+
+.habit-label {
+  padding-right: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.habit-cell {
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.habit-cell:hover {
+  filter: brightness(0.97);
+}
+
+.habit-graph {
+  margin-top: 1rem;
+}
+
+.habit-graph-controls {
+  display: inline-flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.graph-range-toggle {
+  border: 1px solid #c4d3ff;
+  background: #f4f6ff;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.graph-range-toggle.active {
+  background: #4a8dff;
+  color: white;
+  border-color: #4a8dff;
+}
+
+.habit-graph-subtitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.habit-graph-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 140px;
+  padding: 0.5rem 0;
+}
+
+.habit-graph-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 0;
+}
+
+.habit-graph-bar-fill-wrapper {
+  width: 100%;
+  background: #eef1ff;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.habit-graph-bar-fill {
+  width: 100%;
+  background: #4caf50;
+  transition: height 0.25s ease;
+  border-radius: 6px 6px 0 0;
+}
+
+.habit-graph-bar-label {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #555;
+}
