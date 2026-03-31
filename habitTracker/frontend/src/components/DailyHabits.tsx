@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import HabitChart from "./HabitChart";
 import { API_BASE } from "../api/config";
 
@@ -19,11 +19,11 @@ type Snapshot = {
 };
 
 
-type GraphRange = "week" | "month";
+// type GraphRange = "week" | "month";
 
 const DailyHabits = () => {
     const [habits, setHabits] = useState<Habit[]>([]);
-    const [graphRange, setGraphRange] = useState<GraphRange>("week");
+    // const [graphRange, setGraphRange] = useState<GraphRange>("week");
 
 
     const [pastHabits, setPastHabits] = useState<Snapshot[]>([]);
