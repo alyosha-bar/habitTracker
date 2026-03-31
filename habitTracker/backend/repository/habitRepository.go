@@ -106,3 +106,14 @@ func (r *HabitRepository) GetDailyHabitSnapshots() ([]models.DailySnapshot, erro
 
 	return snapshots, nil
 }
+
+func (r *HabitRepository) AddDailyHabit(name string) (models.DailyHabit, error) {
+	habit := models.DailyHabit{Name: name, Completed: false}
+	result := r.DB.Create(&habit)
+	return habit, result.Error
+}
+
+func (r *HabitRepository) DeleteDailyHabit(id uint64) error {
+	result := r.DB.Delete(&models.DailyHabit{}, id)
+	return result.Error
+}

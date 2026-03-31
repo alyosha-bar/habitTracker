@@ -24,9 +24,13 @@ type HabitService interface {
 	MinusLogHour(habitID uint64) error
 	CreateHabit(habit models.Habit) (models.Habit, error)
 	DeleteHabit(id uint64) error
+
+	// Daily Habits
 	MarkDailyHabit(id uint64, completed bool) error
 	GetAllDailyHabits() ([]models.DailyHabit, error)
 	GetDailyHabitSnapshots() ([]models.DailySnapshot, error)
+	AddDailyHabit(name string) (models.DailyHabit, error)
+	DeleteDailyHabit(id uint64) error
 }
 
 type HabitHandler struct {
@@ -195,4 +199,44 @@ func (h *HabitHandler) GetDailyHabitSnapshots(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"snapshots": snapshots})
+}
+
+func (h *HabitHandler) AddDailyHabit(c *gin.Context) {
+
+	// Get habit from query params
+	name := c.Query("name")
+	if name == "" {
+		c.JSON(400, gin.H{"error": "Habit name is required"})
+		return
+	}
+
+	habit, err := h.Service.AddDailyHabit(name)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to add daily habit"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Daily habit added successfully",
+		"habit":   habit,
+	})
+}
+
+func (h *HabitHandler) DeleteDailyHabit(c *gin.Context) {
+	habit_id := c.Param("id")
+
+	habitID, err := strconv.ParseUint(habit_id, 10, 64)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid habit ID"})
+		return
+	}
+
+	err = h.Service.DeleteDailyHabit(habitID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete daily habit"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Daily habit deleted successfully"})
 }

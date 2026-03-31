@@ -36,11 +36,17 @@ func SetupRoutes(router *gin.Engine) {
 
 		habitRoutes.DELETE("/delete/:id", habitHandler.DeleteHabit)
 
-		habitRoutes.PUT("/daily/:id", habitHandler.MarkDailyHabit)
-
+		// Daily Habit Routes
 		habitRoutes.GET("/daily", habitHandler.GetDailyHabits)
 
 		habitRoutes.GET("/daily/snapshots", habitHandler.GetDailyHabitSnapshots)
+
+		habitRoutes.POST("/daily/add", habitHandler.AddDailyHabit)
+
+		habitRoutes.PUT("/daily/:id", habitHandler.MarkDailyHabit)
+
+		habitRoutes.DELETE("/daily/:id", habitHandler.DeleteDailyHabit)
+
 	}
 
 	todoRoutes := router.Group("/todos")

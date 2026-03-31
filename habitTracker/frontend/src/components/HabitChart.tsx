@@ -23,20 +23,6 @@ interface ChartDataPoint {
   isToday: boolean;
 }
 
-// const pastSnapshots: Snapshot[] = [
-//   { date: "2026-01-01", habits: [{ id: 1, completed: true }, { id: 2, completed: false }] },
-//   { date: "2026-01-02", habits: [{ id: 1, completed: true }, { id: 2, completed: true }] },
-//   { date: "2026-01-03", habits: [{ id: 1, completed: false }, { id: 2, completed: true }] },
-// ];
-
-// const initialHabits: Habit[] = [
-//   { id: 1, name: "Drink Water", completed: false },
-//   { id: 2, name: "Exercise", completed: false },
-//   { id: 3, name: "Read", completed: false },
-//   { id: 4, name: "LeetCode", completed: false },
-// ];
-
-
 
 interface HabitChartProps {
   todaysHabits: Habit[];
@@ -47,7 +33,7 @@ export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps
 
   const maxHabits: number = todaysHabits.length;
 
-  const todayStr: string = new Date().toISOString().split("T")[0];
+  const todayStr: string = new Date().toLocaleDateString();
   const todayCompleted: number = todaysHabits.filter((h) => h.completed).length;
 
   // Fetch from backend
@@ -61,12 +47,12 @@ export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps
 
   const data: ChartDataPoint[] = [
     ...pastHabits.map((s) => ({
-      date: s.Date.slice(5),
+      date: s.Date,
       completed: s.Habits.filter((h) => h.completed).length,
       isToday: false,
     })),
     {
-      date: todayStr.slice(5),
+      date: todayStr,
       completed: todayCompleted,
       isToday: true,
     },

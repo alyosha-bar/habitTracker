@@ -175,6 +175,8 @@
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
+  width: fit-content;
+  min-width: 200px;
   max-width: 420px; /* same width as habits */
 }
 
@@ -374,6 +376,19 @@
 .daily-habits-tab.active {
   background: #fff;
   box-shadow: 0 0 0 1px rgba(40, 80, 167, 0.2);
+}
+
+.daily-habits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.daily-habit-layout {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .habit-row {
