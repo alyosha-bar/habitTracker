@@ -64,14 +64,16 @@ func main() {
 	c.AddFunc("59 59 23 * * *", func() {
 		log.Println("Saving daily habit snapshot...")
 
+		// get date asap to capture correct date even if the cron job runs a bit later than scheduled
+		date := time.Now().Format("2006-01-02")
+
 		// store daily habits and their completed status into a jsonb column in the DailyHabitSnapshot table
 		type DailySnapshot struct {
 			ID     uint   `gorm:"primaryKey" json:"id"`
 			Date   string `json:"date"`
-			Habits string `json:"habits"` // JSON string of habits and their status
+			Habits string `json:"habits"`
 		}
 
-		// Example: Fetch habits and their status, convert to JSON, and save to DailyHabitSnapshot
 		var habits []DailyHabit
 		if err := db.Find(&habits).Error; err != nil {
 			log.Println("Error fetching habits:", err)
@@ -86,7 +88,7 @@ func main() {
 		}
 
 		snapshot := DailySnapshot{
-			Date:   time.Now().Format("2006-01-02"), // Save the date of the snapshot
+			Date:   date,
 			Habits: string(habitsJSON),
 		}
 
