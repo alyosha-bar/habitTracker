@@ -17,7 +17,7 @@ type SnapshotHabit = {
 
 type Snapshot = {
   Date: string; // YYYY-MM-DD
-  Habits: SnapshotHabit[];
+  Count: number; // Number of habits completed that day
 };
 
 
@@ -40,6 +40,10 @@ const DailyHabits = () => {
             const data = await response.json();
             setHabits(data.dailyHabits);
         };
+
+
+        // Current --> fetch past habits (snapshots)
+        // Improvement --> fetch how many habits were completed for each day, not just the snapshot of habits
 
         const fetchPastHabits = async () => {
             const response = await fetch(`${API_BASE}/habits/daily/snapshots`);

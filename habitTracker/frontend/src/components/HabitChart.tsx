@@ -8,7 +8,7 @@ interface HabitEntry {
 
 interface Snapshot {
   Date: string;
-  Habits: HabitEntry[];
+  Count: number;
 }
 
 interface Habit {
@@ -48,7 +48,7 @@ export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps
   const data: ChartDataPoint[] = [
     ...pastHabits.map((s) => ({
       date: s.Date,
-      completed: s.Habits.filter((h) => h.completed).length,
+      completed: s.Count,
       isToday: false,
     })),
     {
@@ -57,6 +57,9 @@ export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps
       isToday: true,
     },
   ];
+
+  // Double Check - sort data by date ascending
+  data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const CustomDot = (props: DotProps & { payload?: ChartDataPoint }) => {
     const { cx, cy, payload } = props;

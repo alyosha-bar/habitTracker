@@ -99,7 +99,7 @@ func (r *HabitRepository) GetAllDailyHabits() ([]models.DailyHabit, error) {
 
 func (r *HabitRepository) GetDailyHabitSnapshots() ([]models.DailySnapshot, error) {
 	var snapshots []models.DailySnapshot
-	result := r.DB.Select("id", "date", "habits").Find(&snapshots)
+	result := r.DB.Select("id", "date", "count").Order("date ASC").Find(&snapshots)
 	if result.Error != nil {
 		return nil, result.Error
 	}
