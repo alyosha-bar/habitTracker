@@ -10,10 +10,10 @@ type Habit = {
   completed: boolean;
 };
 
-type SnapshotHabit = {
-  id: number;
-  completed: boolean;
-};
+// type SnapshotHabit = {
+//   id: number;
+//   completed: boolean;
+// };
 
 type Snapshot = {
   Date: string; // YYYY-MM-DD

@@ -1,10 +1,10 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from "recharts";
 import type { DotProps } from "recharts";
 
-interface HabitEntry {
-  id: number;
-  completed: boolean;
-}
+// interface HabitEntry {
+//   id: number;
+//   completed: boolean;
+// }
 
 interface Snapshot {
   Date: string;
