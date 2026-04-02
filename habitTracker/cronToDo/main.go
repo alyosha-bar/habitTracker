@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/robfig/cron/v3"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -22,6 +21,70 @@ type DailyHabit struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	Name      string `json:"name"`
 	Completed bool   `json:"completed"`
+}
+
+func clearCompletedTodos(db *gorm.DB) {
+
+	log.Println("Runs every day at 23:59:59")
+
+	// clear completed to-dos
+	if err := db.Where("completed = ?", true).Delete(&Todo{}).Error; err != nil {
+		log.Println("Error clearing completed to-dos:", err)
+	}
+
+	log.Println("Completed to-dos cleared.")
+
+}
+
+func saveDailyHabitSnapshot(db *gorm.DB) {
+
+	log.Println("Saving daily habit snapshot...")
+
+	// get date asap to capture correct date even if the cron job runs a bit later than scheduled
+	date := time.Now().Format("2006-01-02")
+
+	// store daily habits and their completed status into a jsonb column in the DailyHabitSnapshot table
+	type DailySnapshot struct {
+		ID     uint   `gorm:"primaryKey" json:"id"`
+		Date   string `json:"date"`
+		Habits string `json:"habits"`
+	}
+
+	var habits []DailyHabit
+	if err := db.Find(&habits).Error; err != nil {
+		log.Println("Error fetching habits:", err)
+		return
+	}
+
+	// Convert habits to JSON string
+	habitsJSON, err := json.Marshal(habits)
+	if err != nil {
+		log.Println("Error converting habits to JSON:", err)
+		return
+	}
+
+	snapshot := DailySnapshot{
+		Date:   date,
+		Habits: string(habitsJSON),
+	}
+
+	if err := db.Create(&snapshot).Error; err != nil {
+		log.Println("Error saving daily habit snapshot:", err)
+		return
+	}
+
+	log.Println("Daily habit snapshot saved successfully.")
+}
+
+func resetDailyHabits(db *gorm.DB) {
+	log.Println("Resetting daily habits...")
+
+	if err := db.Model(&DailyHabit{}).Where("completed = ?", true).Update("completed", false).Error; err != nil {
+		log.Println("Error resetting daily habits:", err)
+		return
+	}
+
+	log.Println("Daily habits reset successfully.")
 }
 
 func main() {
@@ -45,75 +108,8 @@ func main() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	c := cron.New(cron.WithSeconds())
-
-	c.AddFunc("59 30 0 * * *", func() {
-		log.Println("Runs every day at 23:59:59")
-
-		// clear completed to-dos
-		if err := db.Where("completed = ?", true).Delete(&Todo{}).Error; err != nil {
-			log.Println("Error clearing completed to-dos:", err)
-		}
-
-		log.Println("Completed to-dos cleared.")
-	})
-
-	// add another daily cron job
-	// save a snapshot of daily habits to a separate table for historical tracking
-
-	c.AddFunc("59 30 0 * * *", func() {
-		log.Println("Saving daily habit snapshot...")
-
-		// get date asap to capture correct date even if the cron job runs a bit later than scheduled
-		date := time.Now().Format("2006-01-02")
-
-		// store daily habits and their completed status into a jsonb column in the DailyHabitSnapshot table
-		type DailySnapshot struct {
-			ID     uint   `gorm:"primaryKey" json:"id"`
-			Date   string `json:"date"`
-			Habits string `json:"habits"`
-		}
-
-		var habits []DailyHabit
-		if err := db.Find(&habits).Error; err != nil {
-			log.Println("Error fetching habits:", err)
-			return
-		}
-
-		// Convert habits to JSON string
-		habitsJSON, err := json.Marshal(habits)
-		if err != nil {
-			log.Println("Error converting habits to JSON:", err)
-			return
-		}
-
-		snapshot := DailySnapshot{
-			Date:   date,
-			Habits: string(habitsJSON),
-		}
-
-		if err := db.Create(&snapshot).Error; err != nil {
-			log.Println("Error saving daily habit snapshot:", err)
-			return
-		}
-
-		log.Println("Daily habit snapshot saved successfully.")
-
-	})
-
-	c.AddFunc("59 59 23 * * *", func() {
-		log.Println("Resetting daily habits...")
-
-		if err := db.Model(&DailyHabit{}).Where("completed = ?", true).Update("completed", false).Error; err != nil {
-			log.Println("Error resetting daily habits:", err)
-			return
-		}
-
-		log.Println("Daily habits reset successfully.")
-	})
-
-	c.Start()
-
-	// Keep the main function running
-	select {}
+	// run the functions
+	clearCompletedTodos(db)
+	saveDailyHabitSnapshot(db)
+	resetDailyHabits(db)
 }
