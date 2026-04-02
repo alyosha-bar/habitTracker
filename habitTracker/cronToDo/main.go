@@ -47,7 +47,7 @@ func main() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("59 59 23 * * *", func() {
+	c.AddFunc("59 30 0 * * *", func() {
 		log.Println("Runs every day at 23:59:59")
 
 		// clear completed to-dos
@@ -61,7 +61,7 @@ func main() {
 	// add another daily cron job
 	// save a snapshot of daily habits to a separate table for historical tracking
 
-	c.AddFunc("59 59 23 * * *", func() {
+	c.AddFunc("59 30 0 * * *", func() {
 		log.Println("Saving daily habit snapshot...")
 
 		// get date asap to capture correct date even if the cron job runs a bit later than scheduled
