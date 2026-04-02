@@ -101,6 +101,17 @@ func main() {
 
 	})
 
+	c.AddFunc("59 59 23 * * *", func() {
+		log.Println("Resetting daily habits...")
+
+		if err := db.Model(&DailyHabit{}).Where("completed = ?", true).Update("completed", false).Error; err != nil {
+			log.Println("Error resetting daily habits:", err)
+			return
+		}
+
+		log.Println("Daily habits reset successfully.")
+	})
+
 	c.Start()
 
 	// Keep the main function running
