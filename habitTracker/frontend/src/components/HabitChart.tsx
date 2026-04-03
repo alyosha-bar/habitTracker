@@ -33,7 +33,11 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
 
   const maxHabits: number = todaysHabits.length;
 
-  const todayStr: string = new Date().toLocaleDateString();
+  const todayStr: string = new Date().toLocaleDateString('en-US', {
+    timeZone: 'UTC'
+  });
+
+  // const todayStr: string = new Date().toLocaleDateString();
   const todayCompleted: number = todaysHabits.filter((h) => h.completed).length;
 
   // Fetch from backend
