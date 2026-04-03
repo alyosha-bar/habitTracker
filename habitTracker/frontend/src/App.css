@@ -2,58 +2,71 @@
 .page-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 2rem;
+  align-items: flex-start;
+  padding: clamp(1rem, 2vw, 2rem);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .app-layout {
   display: grid;
-  grid-template-columns: 1fr 350px;
-  grid-template-rows: auto 200px;
+  grid-template-columns: 1fr minmax(280px, 360px);
+  grid-template-rows: auto auto;
   grid-template-areas:
     "left right"
     "bottom bottom";
-  height: 100vh;
-  width: 60vw;
-  padding: 1rem;
-  gap: 1rem;
+  width: min(100%, 1200px);
+  padding: 0;
+  margin: 0 auto;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
 }
 
 .title {
-  padding: 5% 0;
+  margin: 0 0 0.75rem;
+  padding: 0;
 }
 
 .left-panel {
   grid-area: left;
+  padding: clamp(0.75rem, 1.5vw, 1.25rem);
 }
 
 .right-panel {
   grid-area: right;
-  border: 1px dashed #ccc;
-  padding: 1rem;
+  padding: clamp(0.75rem, 1.5vw, 1.25rem);
 }
 
 .bottom-panel {
   grid-area: bottom;
-  border: 1px dashed #ccc;
-  padding: 1rem;
+  padding: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.modal-host {
+  grid-area: bottom;
+  height: 0;
+  overflow: visible;
+}
+
+.daily-panel {
+  padding: 0;
 }
 
 /* Habit Tracker */
 .habit-tracker {
   font-family: sans-serif;
+  width: 100%;
 }
 
 .habit {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 0.75rem 1rem;
   margin-bottom: 0.6rem;
-  /* max-width: 620px; */
+  box-sizing: border-box;
 }
 
 .title-group {
@@ -67,6 +80,7 @@
   width: 100%;
   justify-content: space-between;
   padding: 1rem 0;
+  gap: 1rem;
 }
 
 .habit-text-area h2 {
@@ -175,7 +189,8 @@
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
-  max-width: 420px; /* same width as habits */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .todo-item input[type="checkbox"] {
@@ -204,7 +219,8 @@
 /* Habit Progess Bar */
 
 .bar {
-  width: 500px;
+  width: 100%;
+  max-width: 500px;
   height: 20px;
   background-color: #e0e0e0;
   overflow: hidden;
@@ -342,7 +358,8 @@
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 1rem;
-  width: 650px;
+  width: 100%;
+  box-sizing: border-box;
   height: fit-content;
 }
 
@@ -378,7 +395,7 @@
 
 .daily-habits {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.4rem;
 }
 
@@ -390,9 +407,10 @@
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
-  width: fit-content;
-  min-width: 200px;
-  max-width: 420px; /* same width as habits */
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 .daily-habit-item input[type="checkbox"] {
@@ -503,4 +521,37 @@
   margin-top: 0.25rem;
   font-size: 0.75rem;
   color: #555;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "left"
+      "right"
+      "bottom";
+  }
+}
+
+@media (max-width: 520px) {
+  .title-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .habit-text-area {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .todo-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .daily-habits {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
 }

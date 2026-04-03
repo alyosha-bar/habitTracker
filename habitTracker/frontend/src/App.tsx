@@ -246,7 +246,6 @@ function App() {
   return (
     <div className='page-container'>
       <div className="app-layout">
-        {/* LEFT COLUMN: Habit Tracker */}
         <div className="left-panel">
           <div className="habit-tracker">
             <div className='title-group'>
@@ -284,7 +283,6 @@ function App() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Placeholder */}
         <div className="right-panel">
           <h2 className='title'>To Do List - {completedCount}/{toDosState.length}</h2>
             <form onSubmit={submitToDo} className="todo-form">
@@ -314,12 +312,12 @@ function App() {
             </div>
           ))}
         </div>
-
-        {/* BOTTOM PANEL: Placeholder */}
-        {/* <div className="bottom-panel">
-        </div> */}
-        <AddHabitModal isOpen={modalOpen} onClose={() => {setModalOpen(false)}} onSubmit={createHabit} />
-        <DailyHabits />
+        <div className="modal-host">
+          <AddHabitModal isOpen={modalOpen} onClose={() => { setModalOpen(false) }} onSubmit={createHabit} />
+        </div>
+        <div className="bottom-panel daily-panel">
+          <DailyHabits />
+        </div>
       </div>
     </div>
   )
