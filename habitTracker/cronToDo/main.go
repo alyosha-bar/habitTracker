@@ -47,6 +47,7 @@ func saveDailyHabitSnapshot(db *gorm.DB) {
 	type DailySnapshot struct {
 		ID     uint   `gorm:"primaryKey" json:"id"`
 		Date   string `json:"date"`
+		Count  int    `json:"count"`
 		Habits string `json:"habits"`
 	}
 
@@ -63,8 +64,17 @@ func saveDailyHabitSnapshot(db *gorm.DB) {
 		return
 	}
 
+	// count the number of completed habits for the day where completed = true
+	count := 0
+	for _, habit := range habits {
+		if habit.Completed {
+			count++
+		}
+	}
+
 	snapshot := DailySnapshot{
 		Date:   date,
+		Count:  count,
 		Habits: string(habitsJSON),
 	}
 
@@ -109,6 +119,9 @@ func main() {
 	}
 
 	// run the functions
+
+	// TODO: add checks for whether that date already has a snapshot
+
 	clearCompletedTodos(db)
 	saveDailyHabitSnapshot(db)
 	resetDailyHabits(db)
