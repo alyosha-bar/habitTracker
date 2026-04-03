@@ -96,11 +96,48 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
     <div style={{ padding: "1.5rem 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1.5rem" }}>
         <p style={{ margin: 0, fontSize: 13, color: "var(--color-text-secondary)" }}>Habits completed per day</p>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--color-text-secondary)" }}>
-          <button onClick={handleGraphChange}> {graphRange} </button>
-          <span style={{ width: 10, height: 10, borderRadius: 2, background: "#AFA9EC", display: "inline-block" }} />
-          completed
-        </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--color-text-secondary)" }}>
+            <button 
+              onClick={handleGraphChange} 
+              style={{
+                // Layout & Sizing
+                padding: "2px 8px",
+                fontSize: "11px",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.02em",
+                
+                // Visuals
+                backgroundColor: "rgba(175, 169, 236, 0.15)", // Subtle tint of your legend color
+                color: "#8e86d9", // Slightly darker version of your legend color
+                border: "1px solid rgba(175, 169, 236, 0.3)",
+                borderRadius: "4px",
+                
+                // Interaction
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                outline: "none",
+                display: "flex",
+                alignItems: "center"
+              }}
+              // Adding a hover effect via inline event listeners
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(175, 169, 236, 0.25)";
+                e.currentTarget.style.borderColor = "rgba(175, 169, 236, 0.5)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(175, 169, 236, 0.15)";
+                e.currentTarget.style.borderColor = "rgba(175, 169, 236, 0.3)";
+              }}
+            > 
+              {graphRange} 
+            </button>
+            
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: "#AFA9EC", display: "inline-block" }} />
+              <span>completed</span>
+            </div>
+          </div>
       </div>
       <ResponsiveContainer width="100%" height={260}>
         <AreaChart data={data} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
