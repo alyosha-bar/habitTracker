@@ -3,6 +3,7 @@ import HabitChart from "./HabitChart";
 import { API_BASE } from "../api/config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { getWeek, getMonth } from 'date-fns';
 
 type Habit = {
   id: number;
@@ -20,12 +21,8 @@ type Snapshot = {
   Count: number; // Number of habits completed that day
 };
 
-
-// type GraphRange = "week" | "month";
-
 const DailyHabits = () => {
     const [habits, setHabits] = useState<Habit[]>([]);
-    // const [graphRange, setGraphRange] = useState<GraphRange>("week");
     const [pastHabits, setPastHabits] = useState<Snapshot[]>([]);
 
     const [newDailyHabit, setNewDailyHabit] = useState<string>("");
@@ -41,26 +38,34 @@ const DailyHabits = () => {
             setHabits(data.dailyHabits);
         };
 
-
-        // Current --> fetch past habits (snapshots)
-        // Improvement --> fetch how many habits were completed for each day, not just the snapshot of habits
-
-        const fetchPastHabits = async () => {
-            const response = await fetch(`${API_BASE}/habits/daily/snapshots`);
-            const data = await response.json();
-
-            // format date in snapshots to be more readable
-            const formattedSnapshots = data.snapshots.map((snapshot: Snapshot) => ({
-                ...snapshot,
-                Date: new Date(snapshot.Date).toLocaleDateString()
-            }));
-
-            setPastHabits(formattedSnapshots);
-        };
-
         fetchDailyHabits();
-        fetchPastHabits();
+        fetchPastHabits("week");
     }, []);
+
+    const fetchPastHabits = async (graphRange: "week" | "month") => {
+
+        // Get Date Range for past habits based on graph range (week/month)
+        // current date
+        const currentDate = new Date();
+
+        let week: number = 0, year: number = 0, month: number = 0;
+
+        // Calculate start date based on graph range
+        week = getWeek(currentDate);
+        month = getMonth(currentDate) + 1; // getMonth is 0-indexed
+        year = currentDate.getFullYear();
+        
+        const response = await fetch(`${API_BASE}/habits/daily/snapshots?graphRange=${graphRange}&week=${week}&month=${month}&year=${year}`);
+        const data = await response.json();
+
+        // format date in snapshots to be more readable
+        const formattedSnapshots = data.snapshots.map((snapshot: Snapshot) => ({
+            ...snapshot,
+            Date: new Date(snapshot.Date).toLocaleDateString()
+        }));
+
+        setPastHabits(formattedSnapshots);
+    };
 
     const toggleHabit = async (id: number) => {
         setHabits((prev) =>
@@ -130,6 +135,10 @@ const DailyHabits = () => {
         setHabits((prev) => prev.filter((h) => h.id !== id));
     };
 
+    const toggleGraphRange = (graphRange: "week" | "month") => {
+        fetchPastHabits(graphRange);
+    };
+
     return (
         <div className="daily-habits-container">
         <div className="daily-habits-header">
@@ -170,11 +179,10 @@ const DailyHabits = () => {
 
             {/* Graph section */}
             {habits && pastHabits && (
-                <HabitChart todaysHabits={habits} pastHabits={pastHabits} />
+                <div>
+                    <HabitChart todaysHabits={habits} pastHabits={pastHabits} toggleGraphRange={toggleGraphRange} />
+                </div>
             )}
-
-
-
         </div>
     );
 };

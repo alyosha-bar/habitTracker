@@ -1,10 +1,7 @@
+import React from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from "recharts";
 import type { DotProps } from "recharts";
 
-// interface HabitEntry {
-//   id: number;
-//   completed: boolean;
-// }
 
 interface Snapshot {
   Date: string;
@@ -27,9 +24,12 @@ interface ChartDataPoint {
 interface HabitChartProps {
   todaysHabits: Habit[];
   pastHabits: Snapshot[];
+  toggleGraphRange: (graphRange: "week" | "month") => void;
 }
 
-export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps) {
+export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange }: HabitChartProps) {
+  
+  const [graphRange, setGraphRange] = React.useState<"week" | "month">("month");
 
   const maxHabits: number = todaysHabits.length;
 
@@ -42,7 +42,9 @@ export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps
 
   // Need to update this so that the it updates live with the toggling of habits, currently it only reflects the initial state of habits and doesn't update when habits are toggled
 
-  // Future: Toggle between week/month view, show past 7 days or past 30 days in the graph, and update the x-axis ticks accordingly. For month view, can also show a tooltip with the specific date when hovering over each point in the graph.
+  // Future: Toggle between week/month view, show past 7 days or past 30 days in the graph, and update the x-axis ticks accordingly
+
+  // When fetching snapshots from the backend, paginate based on the seleceted view (week/month) 
 
 
   const data: ChartDataPoint[] = [
@@ -85,11 +87,17 @@ export default function HabitChart({ todaysHabits, pastHabits }: HabitChartProps
   };
 
 
+  const handleGraphChange = () => {
+    toggleGraphRange(graphRange);
+    setGraphRange((prev) => (prev === "week" ? "month" : "week"));
+  }
+
   return (
     <div style={{ padding: "1.5rem 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1.5rem" }}>
         <p style={{ margin: 0, fontSize: 13, color: "var(--color-text-secondary)" }}>Habits completed per day</p>
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--color-text-secondary)" }}>
+          <button onClick={handleGraphChange}> {graphRange} </button>
           <span style={{ width: 10, height: 10, borderRadius: 2, background: "#AFA9EC", display: "inline-block" }} />
           completed
         </div>

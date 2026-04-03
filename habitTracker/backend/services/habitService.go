@@ -1,6 +1,8 @@
 package services
 
 import (
+	"time"
+
 	"github.com/alyosha-bar/golang-react/models"
 	"github.com/alyosha-bar/golang-react/repository"
 )
@@ -49,8 +51,8 @@ func (s *HabitService) GetAllDailyHabits() ([]models.DailyHabit, error) {
 	return s.Repo.GetAllDailyHabits()
 }
 
-func (s *HabitService) GetDailyHabitSnapshots() ([]models.DailySnapshot, error) {
-	return s.Repo.GetDailyHabitSnapshots()
+func (s *HabitService) GetDailyHabitSnapshots(startDate time.Time, endDate time.Time) ([]models.DailySnapshot, error) {
+	return s.Repo.GetDailyHabitSnapshots(startDate, endDate)
 }
 
 func (s *HabitService) AddDailyHabit(name string) (models.DailyHabit, error) {

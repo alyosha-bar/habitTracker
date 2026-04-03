@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/alyosha-bar/golang-react/models"
 	"gorm.io/gorm"
 )
@@ -97,9 +99,14 @@ func (r *HabitRepository) GetAllDailyHabits() ([]models.DailyHabit, error) {
 	return dailyHabits, result.Error
 }
 
-func (r *HabitRepository) GetDailyHabitSnapshots() ([]models.DailySnapshot, error) {
+func (r *HabitRepository) GetDailyHabitSnapshots(startDate time.Time, endDate time.Time) ([]models.DailySnapshot, error) {
+
+	// strip time component from startDate and endDate to ensure we are comparing only dates
+	startDateStr := startDate.Format("2006-01-02")
+	endDateStr := endDate.Format("2006-01-02")
+
 	var snapshots []models.DailySnapshot
-	result := r.DB.Select("id", "date", "count").Order("id ASC").Find(&snapshots)
+	result := r.DB.Select("id", "date", "count").Where("date >= ? AND date <= ?", startDateStr, endDateStr).Order("id ASC").Find(&snapshots)
 	if result.Error != nil {
 		return nil, result.Error
 	}

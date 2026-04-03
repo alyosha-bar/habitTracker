@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/alyosha-bar/golang-react/models"
+	"github.com/alyosha-bar/golang-react/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +30,7 @@ type HabitService interface {
 	// Daily Habits
 	MarkDailyHabit(id uint64, completed bool) error
 	GetAllDailyHabits() ([]models.DailyHabit, error)
-	GetDailyHabitSnapshots() ([]models.DailySnapshot, error)
+	GetDailyHabitSnapshots(startDate time.Time, endDate time.Time) ([]models.DailySnapshot, error)
 	AddDailyHabit(name string) (models.DailyHabit, error)
 	DeleteDailyHabit(id uint64) error
 }
@@ -191,7 +193,21 @@ func (h *HabitHandler) GetDailyHabits(c *gin.Context) {
 }
 
 func (h *HabitHandler) GetDailyHabitSnapshots(c *gin.Context) {
-	snapshots, err := h.Service.GetDailyHabitSnapshots()
+
+	// Get week, month, and year from query params
+	y := util.QueryInt(c.Query("year"))
+	m := util.QueryInt(c.Query("month"))
+	w := util.QueryInt(c.Query("week"))
+	graphRange := c.Query("graphRange")
+
+	fmt.Printf("Received query params - week: %s, month: %s, year: %s, graphRange: %s\n", w, m, y, graphRange)
+
+	// Calculate Date start and end date
+	Start, End := util.GetDateRange(y, m, w, graphRange)
+
+	fmt.Printf("Calculated date range - start: %s, end: %s\n", Start.Format("2006-01-02"), End.Format("2006-01-02"))
+
+	snapshots, err := h.Service.GetDailyHabitSnapshots(Start, End)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch daily habit snapshots"})
