@@ -1,3 +1,49 @@
+/* Design tokens — dark theme */
+:root {
+  --color-primary: #6366f1;
+  --color-secondary: #06b6d4;
+  --color-tertiary: #94a3b8;
+  --color-neutral: #0f172a;
+
+  --color-surface: #1e293b;
+  --color-surface-elevated: #334155;
+  --color-border: rgba(148, 163, 184, 0.22);
+  --color-border-strong: rgba(148, 163, 184, 0.35);
+
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+
+  /* Progress fill states */
+  --color-progress-active: #06b6d4;
+  --color-progress-complete: #6366f1;
+  --color-progress-exceeded: #22d3ee;
+
+  /* Chart / legacy aliases used in HabitChart */
+  --color-background-primary: #1e293b;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+
+  --font-headline: "Manrope", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-label: "Space Grotesk", system-ui, sans-serif;
+
+  --radius-sm: 2px;
+  --radius-md: 6px;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-neutral);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
 /* Layout Containers */
 .page-container {
   display: flex;
@@ -24,6 +70,10 @@
 .title {
   margin: 0 0 0.75rem;
   padding: 0;
+  font-family: var(--font-headline);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
 }
 
 .left-panel {
@@ -53,7 +103,7 @@
 
 /* Habit Tracker */
 .habit-tracker {
-  font-family: sans-serif;
+  font-family: var(--font-body);
   width: 100%;
 }
 
@@ -62,11 +112,12 @@
   justify-content: space-between;
   flex-direction: column;
   align-items: stretch;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
   margin-bottom: 0.6rem;
   box-sizing: border-box;
+  background: var(--color-surface);
 }
 
 .title-group {
@@ -85,12 +136,17 @@
 
 .habit-text-area h2 {
   margin: 0;
+  font-family: var(--font-headline);
   font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .habit-text-area p {
   margin: 0.15rem 0;
   font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-label);
 }
 
 .habit-buttons {
@@ -104,93 +160,110 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background: none;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-
-  background-color: #007bff;
-  color: white;
-
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
   cursor: pointer;
   padding: 0;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
- 
+
+.habit-buttons button:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
 
 .habit-buttons svg {
   font-size: 0.9rem;
 }
 
 .title-group button {
-  padding: 0.5rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   max-height: 40px;
-  background: #007bff;
-  border: none;
+  background: var(--color-primary);
+  border: 1px solid transparent;
   color: #fff;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.85rem;
+  font-family: var(--font-label);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease, filter 0.15s ease;
+}
+
+.title-group button:hover,
+.habit-buttons button:focus-visible {
+  filter: brightness(1.08);
 }
 
 .habit button:hover {
-  background: #005fcc;
+  filter: brightness(1.08);
 }
 
 /* To Do Section */
 .todo-section {
-  font-family: sans-serif;
+  font-family: var(--font-body);
   margin-top: 1rem;
 }
 
-
-/* To Do Form */
 .todo-form {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  font-family: sans-serif;
+  font-family: var(--font-body);
 }
 
 .todo-form input[type="text"] {
   flex: 1;
   border: none;
-  padding: 0.5rem;
-  background-color: none;
-  border-bottom: 1px solid #ccc;
+  padding: 0.5rem 0.25rem;
+  background: transparent;
+  border-bottom: 1px solid var(--color-border-strong);
   font-size: 0.9rem;
   outline: none;
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.todo-form input[type="text"]::placeholder {
+  color: var(--color-text-subtle);
 }
 
 .todo-form input[type="text"]:focus {
-  border-bottom-color: #007bff;
+  border-bottom-color: var(--color-secondary);
 }
 
 .todo-form button {
-  padding: 0.3rem 0.6rem;
-  background: #007bff;
+  padding: 0.35rem 0.75rem;
+  background: var(--color-primary);
   border: none;
   color: #fff;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.85rem;
+  font-family: var(--font-label);
+  font-weight: 500;
+  transition: filter 0.15s ease;
 }
 
 .todo-form button:hover {
-  background: #005fcc;
+  filter: brightness(1.08);
 }
-
-/* To Do Items */
 
 .todo-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
   width: 100%;
   box-sizing: border-box;
+  background: var(--color-surface);
 }
 
 .todo-item input[type="checkbox"] {
@@ -198,89 +271,112 @@
   width: 16px;
   height: 16px;
   cursor: pointer;
+  accent-color: var(--color-primary);
 }
 
 .todo-item span {
   font-size: 0.9rem;
+  color: var(--color-text);
 }
 
 .icon {
   cursor: pointer;
-  color: #888;
+  color: var(--color-text-muted);
   padding: 0.1rem;
+  transition: color 0.15s ease;
 }
 
-/* Completed strike-through (optional and subtle) */
+.icon:hover {
+  color: var(--color-secondary);
+}
+
 .todo-item input[type="checkbox"]:checked + span {
   text-decoration: line-through;
-  color: #777;
+  color: var(--color-text-subtle);
 }
 
-/* Habit Progess Bar */
-
+/* Habit progress — thin, rectangular track */
 .bar {
   width: 100%;
   max-width: 500px;
-  height: 20px;
-  background-color: #e0e0e0;
+  height: 5px;
+  background-color: rgba(148, 163, 184, 0.18);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .filled-bar {
   height: 100%;
-  transition: width 0.4s ease, background-color 0.4s ease;
-  border-radius: 4px;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+  transition: width 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease;
 }
 
+.filled-bar--in-progress {
+  background-color: var(--color-progress-active);
+  box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.25);
+}
 
-/* Model Styles */
-/* --- Background Overlay (screen disabled) --- */
+.filled-bar--completed {
+  background-color: var(--color-progress-complete);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
+}
+
+.filled-bar--exceeded {
+  background-color: var(--color-progress-exceeded);
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.35),
+    0 0 12px rgba(6, 182, 212, 0.2);
+}
+
+.filled-bar--empty {
+  width: 0 !important;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(15, 23, 42, 0.72);
   display: none;
   z-index: 900;
+  backdrop-filter: blur(4px);
 }
 
 .modal-overlay.open {
   display: block;
 }
 
-/* --- Modal Container --- */
 .modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.95);
   opacity: 0;
-
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 1.5rem 1.8rem;
-  width: 320px;
-
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
-  font-family: sans-serif;
+  width: min(320px, calc(100vw - 2rem));
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+  font-family: var(--font-body);
   z-index: 1000;
-
   pointer-events: none;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-/* When open, animate visible */
 .modal.open {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
   pointer-events: auto;
 }
 
-/* Close button */
 .modal > button {
   position: absolute;
   top: 8px;
@@ -290,21 +386,23 @@
   cursor: pointer;
   padding: 0.25rem;
   font-size: 1rem;
-  color: #666;
+  color: var(--color-text-muted);
+  transition: color 0.15s ease;
 }
 
 .modal > button:hover {
-  color: #000;
+  color: var(--color-text);
 }
 
-/* Header */
 .modal h2 {
   margin: 0 0 1rem;
   font-size: 1.2rem;
   text-align: center;
+  font-family: var(--font-headline);
+  font-weight: 600;
+  color: var(--color-text);
 }
 
-/* Form layout */
 .modal form div {
   display: flex;
   flex-direction: column;
@@ -312,42 +410,47 @@
   margin-bottom: 1rem;
 }
 
-/* Labels */
 .modal label {
-  font-size: 0.85rem;
-  color: #555;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-label);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-/* Inputs */
 .modal input {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.55rem;
   font-size: 0.9rem;
   outline: none;
+  background: var(--color-neutral);
+  color: var(--color-text);
+  font-family: var(--font-body);
 }
 
 .modal input:focus {
-  border-color: #4a8dff;
+  border-color: var(--color-primary);
 }
 
-/* Submit button */
 .modal form button[type="submit"] {
-  background: #4a8dff;
+  background: var(--color-primary);
   color: white;
   border: none;
   padding: 0.5rem 0.9rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.9rem;
   margin-top: 0.5rem;
-  transition: background 0.2s ease;
+  font-family: var(--font-label);
+  font-weight: 500;
+  transition: filter 0.15s ease;
 }
 
 .modal form button[type="submit"]:hover {
-  background: #2e76f6;
+  filter: brightness(1.08);
 }
-
 
 /* Daily Habits Grid */
 .habit-grid {
@@ -355,12 +458,13 @@
 }
 
 .daily-habits-container {
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 1rem;
   width: 100%;
   box-sizing: border-box;
   height: fit-content;
+  background: var(--color-surface);
 }
 
 .daily-habits-header {
@@ -371,26 +475,40 @@
   gap: 1rem;
 }
 
+.daily-habits-header h2 {
+  margin: 0;
+  font-family: var(--font-headline);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
 .daily-habits-tabs {
   display: inline-flex;
-  border-radius: 999px;
-  background: #e8f0ff;
-  padding: 0.15rem;
+  border-radius: var(--radius-sm);
+  background: rgba(99, 102, 241, 0.12);
+  padding: 0.2rem;
+  border: 1px solid var(--color-border);
 }
 
 .daily-habits-tab {
   border: none;
   background: transparent;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.85rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
   cursor: pointer;
-  border-radius: 999px;
-  color: #2850a7;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-label);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .daily-habits-tab.active {
-  background: #fff;
-  box-shadow: 0 0 0 1px rgba(40, 80, 167, 0.2);
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .daily-habits {
@@ -403,14 +521,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
   width: 100%;
   min-width: 0;
   max-width: none;
   box-sizing: border-box;
+  background: var(--color-neutral);
 }
 
 .daily-habit-item input[type="checkbox"] {
@@ -418,17 +537,17 @@
   width: 16px;
   height: 16px;
   cursor: pointer;
+  accent-color: var(--color-secondary);
 }
 
 .daily-habit-item span {
   font-size: 0.9rem;
+  color: var(--color-text);
 }
 
-
-/* Completed strike-through (optional and subtle) */
 .daily-habit-item input[type="checkbox"]:checked + span {
   text-decoration: line-through;
-  color: #777;
+  color: var(--color-text-subtle);
 }
 
 .daily-habit-layout {
@@ -445,6 +564,8 @@
 .habit-label {
   padding-right: 0.4rem;
   font-size: 0.85rem;
+  font-family: var(--font-label);
+  color: var(--color-text-muted);
 }
 
 .habit-cell {
@@ -452,7 +573,7 @@
 }
 
 .habit-cell:hover {
-  filter: brightness(0.97);
+  filter: brightness(1.06);
 }
 
 .habit-graph {
@@ -466,24 +587,28 @@
 }
 
 .graph-range-toggle {
-  border: 1px solid #c4d3ff;
-  background: #f4f6ff;
+  border: 1px solid var(--color-border);
+  background: var(--color-neutral);
+  color: var(--color-text-muted);
   padding: 0.25rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-family: var(--font-label);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .graph-range-toggle.active {
-  background: #4a8dff;
-  color: white;
-  border-color: #4a8dff;
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
 }
 
 .habit-graph-subtitle {
   margin: 0 0 0.5rem;
   font-size: 0.8rem;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .habit-graph-bars {
@@ -503,8 +628,8 @@
 
 .habit-graph-bar-fill-wrapper {
   width: 100%;
-  background: #eef1ff;
-  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: flex-end;
   overflow: hidden;
@@ -512,15 +637,16 @@
 
 .habit-graph-bar-fill {
   width: 100%;
-  background: #4caf50;
+  background: var(--color-secondary);
   transition: height 0.25s ease;
-  border-radius: 6px 6px 0 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 
 .habit-graph-bar-label {
   margin-top: 0.25rem;
   font-size: 0.75rem;
-  color: #555;
+  color: var(--color-text-muted);
+  font-family: var(--font-label);
 }
 
 /* Responsive layout */

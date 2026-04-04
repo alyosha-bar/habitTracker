@@ -1,32 +1,32 @@
-
 type HabitProgressBarProps = {
     loggedHours: number;
     targetHours: number;
 };
 
-const HabitProgessBar = ({loggedHours, targetHours}: HabitProgressBarProps) => {
+const HabitProgessBar = ({ loggedHours, targetHours }: HabitProgressBarProps) => {
+    const safeTarget = targetHours > 0 ? targetHours : 1;
+    const rawPct = (loggedHours / safeTarget) * 100;
+    const percentage = targetHours <= 0 ? 0 : Math.min(rawPct, 100);
 
-    // bar of fixed length for each
-    // colour in bar based on percentage of logged hours to target hours
-    const percentage = Math.min((loggedHours / targetHours) * 100, 100);
-    const exceeded = loggedHours > targetHours;
-    const completed = loggedHours === targetHours;
-    const inProgress = loggedHours < targetHours;
+    const exceeded = targetHours > 0 && loggedHours > targetHours;
+    const completed = targetHours > 0 && loggedHours === targetHours;
+    const inProgress = targetHours > 0 && loggedHours < targetHours;
 
-    if (loggedHours > targetHours) {
-        console.log("Target exceeded!");
+    let stateClass = "filled-bar--empty";
+    if (targetHours > 0) {
+        if (exceeded) stateClass = "filled-bar--exceeded";
+        else if (completed) stateClass = "filled-bar--completed";
+        else if (inProgress) stateClass = "filled-bar--in-progress";
     }
-
 
     return (
         <div className="bar">
-            <div className={`filled-bar `} style={
-                { 
-                    width: `${percentage}%`,
-                    backgroundColor: inProgress ? 'blue' : completed ? 'green' : exceeded ? 'gold' : 'grey'
-                }}></div>
+            <div
+                className={`filled-bar ${stateClass}`}
+                style={{ width: `${percentage}%` }}
+            />
         </div>
     );
-}
- 
+};
+
 export default HabitProgessBar;

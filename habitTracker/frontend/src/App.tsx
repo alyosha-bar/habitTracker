@@ -1,5 +1,4 @@
 import { API_BASE } from './api/config'
-import './App.css'
 import { useEffect, useState } from 'react'
 import HabitProgressBar from './components/HabitProgressBar'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'

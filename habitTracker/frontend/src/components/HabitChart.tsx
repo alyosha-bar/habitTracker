@@ -33,6 +33,8 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
 
   const maxHabits: number = todaysHabits.length;
 
+  // improve in the future by getting the system timezone (both frontend and cron job)
+
   const todayStr: string = new Date().toLocaleDateString('en-US', {
     timeZone: 'UTC'
   });
@@ -70,7 +72,7 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
   const CustomDot = (props: DotProps & { payload?: ChartDataPoint }) => {
     const { cx, cy, payload } = props;
     if (!payload?.isToday) return null;
-    return <circle cx={cx} cy={cy} r={5} fill="#7F77DD" stroke="#fff" strokeWidth={2} />;
+    return <circle cx={cx} cy={cy} r={5} fill="#6366F1" stroke="#0f172a" strokeWidth={2} />;
   };
 
   interface CustomTooltipProps {
@@ -83,7 +85,7 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
     if (!active || !payload?.length) return null;
     const isToday = payload[0]?.payload?.isToday;
     return (
-      <div style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, padding: "8px 12px", fontSize: 13 }}>
+      <div style={{ background: "var(--color-background-primary)", border: "1px solid var(--color-border)", borderRadius: 6, padding: "8px 12px", fontSize: 13 }}>
         <p style={{ margin: "0 0 2px", color: "var(--color-text-secondary)" }}>{isToday ? `${label} (today)` : label}</p>
         <p style={{ margin: 0, fontWeight: 500, color: "var(--color-text-primary)" }}>{payload[0].value} / {maxHabits} habits</p>
       </div>
@@ -112,10 +114,10 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
                 letterSpacing: "0.02em",
                 
                 // Visuals
-                backgroundColor: "rgba(175, 169, 236, 0.15)", // Subtle tint of your legend color
-                color: "#8e86d9", // Slightly darker version of your legend color
-                border: "1px solid rgba(175, 169, 236, 0.3)",
-                borderRadius: "4px",
+                backgroundColor: "rgba(99, 102, 241, 0.15)",
+                color: "#a5b4fc",
+                border: "1px solid rgba(99, 102, 241, 0.35)",
+                borderRadius: "2px",
                 
                 // Interaction
                 cursor: "pointer",
@@ -126,19 +128,19 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
               }}
               // Adding a hover effect via inline event listeners
               onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(175, 169, 236, 0.25)";
-                e.currentTarget.style.borderColor = "rgba(175, 169, 236, 0.5)";
+                e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.25)";
+                e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.5)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(175, 169, 236, 0.15)";
-                e.currentTarget.style.borderColor = "rgba(175, 169, 236, 0.3)";
+                e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.15)";
+                e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.35)";
               }}
             > 
               {graphRange} 
             </button>
             
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ width: 10, height: 10, borderRadius: 2, background: "#AFA9EC", display: "inline-block" }} />
+              <span style={{ width: 10, height: 4, borderRadius: 1, background: "#6366F1", display: "inline-block" }} />
               <span>completed</span>
             </div>
           </div>
@@ -147,11 +149,11 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
         <AreaChart data={data} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
           <defs>
             <linearGradient id="habitGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#7F77DD" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#7F77DD" stopOpacity={0.03} />
+              <stop offset="5%" stopColor="#6366F1" stopOpacity={0.28} />
+              <stop offset="95%" stopColor="#6366F1" stopOpacity={0.04} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.15)" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" vertical={false} />
           <XAxis
             dataKey="date"
             tick={{ fontSize: 12, fill: "var(--color-text-secondary)" }}
@@ -167,22 +169,22 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
             tickLine={false}
             tickMargin={8}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(128,128,128,0.2)", strokeWidth: 1 }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(148,163,184,0.25)", strokeWidth: 1 }} />
           <ReferenceLine
             x={todayStr.slice(5)}
-            stroke="#7F77DD"
+            stroke="#06B6D4"
             strokeDasharray="4 3"
             strokeWidth={1.5}
-            label={{ value: "today", position: "insideTopRight", fontSize: 11, fill: "#7F77DD", dy: -4 }}
+            label={{ value: "today", position: "insideTopRight", fontSize: 11, fill: "#06B6D4", dy: -4 }}
           />
           <Area
             type="monotone"
             dataKey="completed"
-            stroke="#7F77DD"
+            stroke="#6366F1"
             strokeWidth={2}
             fill="url(#habitGrad)"
             dot={<CustomDot />}
-            activeDot={{ r: 5, fill: "#7F77DD", stroke: "#fff", strokeWidth: 2 }}
+            activeDot={{ r: 5, fill: "#6366F1", stroke: "#0f172a", strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>
