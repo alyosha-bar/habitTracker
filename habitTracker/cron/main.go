@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/robfig/cron/v3"
 	"gorm.io/datatypes"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -49,24 +48,8 @@ func main() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	c := cron.New(cron.WithSeconds())
-
-	c.AddFunc("59 59 23 * * 0", func() {
-		fmt.Println("Runs Sunday at 23:59:59")
-
-		// create snapshot
-		createSnapshot(db)
-
-		// clear logged hours
-		clearLoggedHours(db)
-
-		// send report emails
-
-	})
-
-	c.Start()
-
-	select {}
+	createSnapshot(db)
+	clearLoggedHours(db)
 
 }
 
