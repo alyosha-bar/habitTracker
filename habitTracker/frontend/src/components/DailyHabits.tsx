@@ -3,7 +3,7 @@ import HabitChart from "./HabitChart";
 import { API_BASE } from "../api/config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { getWeek, getMonth } from 'date-fns';
+import { getISOWeek, getMonth } from 'date-fns';
 
 type Habit = {
   id: number;
@@ -51,7 +51,8 @@ const DailyHabits = () => {
         let week: number = 0, year: number = 0, month: number = 0;
 
         // Calculate start date based on graph range
-        week = getWeek(currentDate);
+        week = getISOWeek(currentDate);
+        console.log(week)
         month = getMonth(currentDate) + 1; // getMonth is 0-indexed
         year = currentDate.getFullYear();
         
