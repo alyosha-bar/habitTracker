@@ -66,6 +66,7 @@ func ConnectDB() {
 		&models.Todo{},
 		&models.DailyHabit{},
 		&models.Snapshot{},
+		&models.User{},
 	)
 	if err != nil {
 		log.Fatal("AutoMigrate failed:", err)
