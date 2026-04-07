@@ -33,7 +33,12 @@ const DailyHabits = () => {
         // Simulate an API call to fetch daily habits
         const fetchDailyHabits = async () => {
             // Replace this with your actual API call
-            const response = await fetch(`${API_BASE}/habits/daily`);
+            const response = await fetch(`${API_BASE}/habits/daily`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             const data = await response.json();
             setHabits(data.dailyHabits);
         };
@@ -56,7 +61,14 @@ const DailyHabits = () => {
         month = getMonth(currentDate) + 1; // getMonth is 0-indexed
         year = currentDate.getFullYear();
         
-        const response = await fetch(`${API_BASE}/habits/daily/snapshots?graphRange=${graphRange}&week=${week}&month=${month}&year=${year}`);
+        const response = await fetch(`${API_BASE}/habits/daily/snapshots?graphRange=${graphRange}&week=${week}&month=${month}&year=${year}`, 
+            { 
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzU3NjQ3NzMsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiQWx5b3NoYSJ9.5LRoiFNDRudZLGGfN5OdJ2D9F_782rktzwONut1vX-8"
+                },
+            }
+        );
         const data = await response.json();
 
         // format date in snapshots to be more readable
@@ -76,6 +88,10 @@ const DailyHabits = () => {
         // API call
         const response = await fetch(`${API_BASE}/habits/daily/${id}?completed=${!habits.find((h) => h.id === id)?.completed}`, {
             method: "PUT",
+            headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzU3NjQ3NzMsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiQWx5b3NoYSJ9.5LRoiFNDRudZLGGfN5OdJ2D9F_782rktzwONut1vX-8"
+                },
         });
 
         if (!response.ok) {
@@ -104,6 +120,10 @@ const DailyHabits = () => {
         // API call
         const response = await fetch(`${API_BASE}/habits/daily/add?name=${encodeURIComponent(newDailyHabit)}`, {
             method: "POST",
+            headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzU3NjQ3NzMsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiQWx5b3NoYSJ9.5LRoiFNDRudZLGGfN5OdJ2D9F_782rktzwONut1vX-8"
+            },
         });
 
         if (!response.ok) {
@@ -125,6 +145,10 @@ const DailyHabits = () => {
         // API call
         const response = await fetch(`${API_BASE}/habits/daily/${id}`, {
             method: "DELETE",
+            headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                },
         });
 
         if (!response.ok) {
