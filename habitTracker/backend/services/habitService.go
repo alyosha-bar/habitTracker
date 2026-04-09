@@ -16,49 +16,49 @@ func NewHabitService(repo *repository.HabitRepository) *HabitService {
 }
 
 // Get all Habits
-func (s *HabitService) GetAllHabits() ([]models.Habit, error) {
-	return s.Repo.GetAllHabits()
+func (s *HabitService) GetAllHabits(uid uint) ([]models.Habit, error) {
+	return s.Repo.GetAllHabits(uid)
 }
 
 // Get a specific Habit
-func (s *HabitService) GetHabitByID(id uint64) (models.Habit, error) {
-	return s.Repo.GetHabitByID(id)
+func (s *HabitService) GetHabitByID(id uint64, uid uint) (models.Habit, error) {
+	return s.Repo.GetHabitByID(id, uid)
 }
 
 // Log hours for a Habit
-func (s *HabitService) LogHour(id uint64) error {
-	return s.Repo.LogHour(id)
+func (s *HabitService) LogHour(id uint64, uid uint) error {
+	return s.Repo.LogHour(id, uid)
 }
 
-func (s *HabitService) MinusLogHour(id uint64) error {
-	return s.Repo.MinusLogHour(id)
+func (s *HabitService) MinusLogHour(id uint64, uid uint) error {
+	return s.Repo.MinusLogHour(id, uid)
 }
 
-func (s *HabitService) CreateHabit(habit models.Habit) (models.Habit, error) {
-	return s.Repo.CreateHabit(habit)
+func (s *HabitService) CreateHabit(habit models.Habit, uid uint) (models.Habit, error) {
+	return s.Repo.CreateHabit(habit, uid)
 }
 
-func (r *HabitService) DeleteHabit(id uint64) error {
-	return r.Repo.DeleteHabit(id)
+func (r *HabitService) DeleteHabit(id uint64, uid uint) error {
+	return r.Repo.DeleteHabit(id, uid)
 }
 
 // Daily Habits
-func (s *HabitService) MarkDailyHabit(id uint64, completed bool) error {
-	return s.Repo.MarkDailyHabit(id, completed)
+func (s *HabitService) MarkDailyHabit(id uint64, completed bool, uid uint) error {
+	return s.Repo.MarkDailyHabit(id, completed, uid)
 }
 
-func (s *HabitService) GetAllDailyHabits() ([]models.DailyHabit, error) {
-	return s.Repo.GetAllDailyHabits()
+func (s *HabitService) GetAllDailyHabits(uid uint) ([]models.DailyHabit, error) {
+	return s.Repo.GetAllDailyHabits(uid)
 }
 
-func (s *HabitService) GetDailyHabitSnapshots(startDate time.Time, endDate time.Time) ([]models.DailySnapshot, error) {
-	return s.Repo.GetDailyHabitSnapshots(startDate, endDate)
+func (s *HabitService) GetDailyHabitSnapshots(startDate time.Time, endDate time.Time, uid uint) ([]models.DailySnapshot, error) {
+	return s.Repo.GetDailyHabitSnapshots(startDate, endDate, uid)
 }
 
-func (s *HabitService) AddDailyHabit(name string) (models.DailyHabit, error) {
-	return s.Repo.AddDailyHabit(name)
+func (s *HabitService) AddDailyHabit(name string, uid uint) (models.DailyHabit, error) {
+	return s.Repo.AddDailyHabit(name, uid)
 }
 
-func (s *HabitService) DeleteDailyHabit(id uint64) error {
-	return s.Repo.DeleteDailyHabit(id)
+func (s *HabitService) DeleteDailyHabit(id uint64, uid uint) error {
+	return s.Repo.DeleteDailyHabit(id, uid)
 }

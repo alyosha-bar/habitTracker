@@ -5,4 +5,5 @@ type Habit struct {
 	Name        string `json:"name"`
 	TargetHours int    `json:"targetHours"`
 	LoggedHours int    `json:"loggedHours"`
+	UserID      uint   `json:"userId"`
 }

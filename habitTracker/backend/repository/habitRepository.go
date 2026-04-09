@@ -16,9 +16,9 @@ func NewHabitRepository(db *gorm.DB) *HabitRepository {
 }
 
 // Get all Habits
-func (r *HabitRepository) GetAllHabits() ([]models.Habit, error) {
+func (r *HabitRepository) GetAllHabits(uid uint) ([]models.Habit, error) {
 	var habits []models.Habit
-	result := r.DB.Select("id", "name", "target_hours", "logged_hours").Find(&habits)
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours").Where("user_id = ?", uid).Find(&habits)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -28,16 +28,26 @@ func (r *HabitRepository) GetAllHabits() ([]models.Habit, error) {
 }
 
 // Get a specific Habit -- not used currently
-func (r *HabitRepository) GetHabitByID(id uint64) (models.Habit, error) {
+func (r *HabitRepository) GetHabitByID(id uint64, uid uint) (models.Habit, error) {
 	var habit models.Habit
-	result := r.DB.First(&habit, id)
+	result := r.DB.First(&habit, id).Where("user_id = ?", uid)
+
+	// Check if record not found
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			// return unauthorized if habit doesn't exist or doesn't belong to user
+			return models.Habit{}, gorm.ErrRecordNotFound
+		}
+		return models.Habit{}, result.Error
+	}
+
 	return habit, result.Error
 }
 
 // Log hours for a Habit --> SLOW right now, needs optimisation
-func (r *HabitRepository) LogHour(id uint64) error {
+func (r *HabitRepository) LogHour(id uint64, uid uint) error {
 	var habit models.Habit
-	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id)
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id).Where("user_id = ?", uid)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -46,9 +56,9 @@ func (r *HabitRepository) LogHour(id uint64) error {
 	return nil
 }
 
-func (r *HabitRepository) MinusLogHour(id uint64) error {
+func (r *HabitRepository) MinusLogHour(id uint64, uid uint) error {
 	var habit models.Habit
-	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id)
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id).Where("user_id = ?", uid)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -66,20 +76,21 @@ func (r *HabitRepository) MinusLogHour(id uint64) error {
 }
 
 // Create a new Habit
-func (r *HabitRepository) CreateHabit(habit models.Habit) (models.Habit, error) {
+func (r *HabitRepository) CreateHabit(habit models.Habit, uid uint) (models.Habit, error) {
+	habit.UserID = uid
 	result := r.DB.Create(&habit)
 	return habit, result.Error
 }
 
-func (r *HabitRepository) DeleteHabit(id uint64) error {
-	result := r.DB.Delete(&models.Habit{}, id)
+func (r *HabitRepository) DeleteHabit(id uint64, uid uint) error {
+	result := r.DB.Delete(&models.Habit{}, id).Where("user_id = ?", uid)
 	return result.Error
 }
 
 // Daily Habits Repository function
-func (r *HabitRepository) MarkDailyHabit(id uint64, completed bool) error {
+func (r *HabitRepository) MarkDailyHabit(id uint64, completed bool, uid uint) error {
 	var habit models.DailyHabit
-	result := r.DB.Select("id", "name", "completed").First(&habit, id)
+	result := r.DB.Select("id", "name", "completed").First(&habit, id).Where("user_id = ?", uid)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -88,9 +99,9 @@ func (r *HabitRepository) MarkDailyHabit(id uint64, completed bool) error {
 	return nil
 }
 
-func (r *HabitRepository) GetAllDailyHabits() ([]models.DailyHabit, error) {
+func (r *HabitRepository) GetAllDailyHabits(uid uint) ([]models.DailyHabit, error) {
 	var dailyHabits []models.DailyHabit
-	result := r.DB.Select("id", "name", "completed").Find(&dailyHabits)
+	result := r.DB.Select("id", "name", "completed").Where("user_id = ?", uid).Find(&dailyHabits)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -99,14 +110,14 @@ func (r *HabitRepository) GetAllDailyHabits() ([]models.DailyHabit, error) {
 	return dailyHabits, result.Error
 }
 
-func (r *HabitRepository) GetDailyHabitSnapshots(startDate time.Time, endDate time.Time) ([]models.DailySnapshot, error) {
+func (r *HabitRepository) GetDailyHabitSnapshots(startDate time.Time, endDate time.Time, uid uint) ([]models.DailySnapshot, error) {
 
 	// strip time component from startDate and endDate to ensure we are comparing only dates
 	startDateStr := startDate.Format("2006-01-02")
 	endDateStr := endDate.Format("2006-01-02")
 
 	var snapshots []models.DailySnapshot
-	result := r.DB.Select("id", "date", "count").Where("date >= ? AND date <= ?", startDateStr, endDateStr).Order("id ASC").Find(&snapshots)
+	result := r.DB.Select("id", "date", "count").Where("date >= ? AND date <= ? AND user_id = ?", startDateStr, endDateStr, uid).Order("id ASC").Find(&snapshots)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -114,13 +125,13 @@ func (r *HabitRepository) GetDailyHabitSnapshots(startDate time.Time, endDate ti
 	return snapshots, nil
 }
 
-func (r *HabitRepository) AddDailyHabit(name string) (models.DailyHabit, error) {
-	habit := models.DailyHabit{Name: name, Completed: false}
+func (r *HabitRepository) AddDailyHabit(name string, uid uint) (models.DailyHabit, error) {
+	habit := models.DailyHabit{Name: name, Completed: false, UserID: uid}
 	result := r.DB.Create(&habit)
 	return habit, result.Error
 }
 
-func (r *HabitRepository) DeleteDailyHabit(id uint64) error {
-	result := r.DB.Delete(&models.DailyHabit{}, id)
+func (r *HabitRepository) DeleteDailyHabit(id uint64, uid uint) error {
+	result := r.DB.Delete(&models.DailyHabit{}, id).Where("user_id = ?", uid)
 	return result.Error
 }

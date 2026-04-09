@@ -13,18 +13,18 @@ func NewTodoService(repo *repository.TodoRepository) *TodoService {
 	return &TodoService{Repo: repo}
 }
 
-func (s *TodoService) GetAllTodos() ([]models.Todo, error) {
-	return s.Repo.GetAllTodos()
+func (s *TodoService) GetAllTodos(uid uint) ([]models.Todo, error) {
+	return s.Repo.GetAllTodos(uid)
 }
 
-func (s *TodoService) AddToDo(todo models.Todo) error {
-	return s.Repo.AddToDo(todo)
+func (s *TodoService) AddToDo(todo models.Todo, uid uint) error {
+	return s.Repo.AddToDo(todo, uid)
 }
 
-func (s *TodoService) CompleteToDo(id uint64) error {
-	return s.Repo.CompleteToDo(id)
+func (s *TodoService) CompleteToDo(id uint64, uid uint) error {
+	return s.Repo.CompleteToDo(id, uid)
 }
 
-func (s *TodoService) DeleteToDo(id uint64) error {
-	return s.Repo.DeleteToDo(id)
+func (s *TodoService) DeleteToDo(id uint64, uid uint) error {
+	return s.Repo.DeleteToDo(id, uid)
 }

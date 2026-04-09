@@ -13,10 +13,10 @@ type ManyTodosResponse struct {
 }
 
 type TodoService interface {
-	GetAllTodos() ([]models.Todo, error)
-	AddToDo(models.Todo) error
-	CompleteToDo(id uint64) error
-	DeleteToDo(id uint64) error
+	GetAllTodos(uid uint) ([]models.Todo, error)
+	AddToDo(newTodo models.Todo, uid uint) error
+	CompleteToDo(id uint64, uid uint) error
+	DeleteToDo(id uint64, uid uint) error
 }
 
 type TodoHandler struct {
@@ -28,7 +28,21 @@ func NewTodoHandler(service TodoService) *TodoHandler {
 }
 
 func (h *TodoHandler) GetAllTodos(c *gin.Context) {
-	todos, err := h.Service.GetAllTodos()
+
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
+	todos, err := h.Service.GetAllTodos(uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch todos"})
 		return
@@ -38,6 +52,20 @@ func (h *TodoHandler) GetAllTodos(c *gin.Context) {
 }
 
 func (h *TodoHandler) AddTodo(c *gin.Context) {
+
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	var newTodo models.Todo
 
 	if err := c.ShouldBindJSON(&newTodo); err != nil {
@@ -45,7 +73,7 @@ func (h *TodoHandler) AddTodo(c *gin.Context) {
 		return
 	}
 
-	if err := h.Service.AddToDo(newTodo); err != nil {
+	if err := h.Service.AddToDo(newTodo, uid); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add todo"})
 		return
 	}
@@ -56,13 +84,26 @@ func (h *TodoHandler) AddTodo(c *gin.Context) {
 func (h *TodoHandler) CompleteTodo(c *gin.Context) {
 	idParam := c.Param("id")
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	id, err := strconv.ParseUint(idParam, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
 		return
 	}
 
-	err = h.Service.CompleteToDo(id)
+	err = h.Service.CompleteToDo(id, uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to complete todo"})
 		return
@@ -74,13 +115,26 @@ func (h *TodoHandler) CompleteTodo(c *gin.Context) {
 func (h *TodoHandler) DeleteTodo(c *gin.Context) {
 	idParam := c.Param("id")
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	id, err := strconv.ParseUint(idParam, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
 		return
 	}
 
-	err = h.Service.DeleteToDo(id)
+	err = h.Service.DeleteToDo(id, uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete todo"})
 		return

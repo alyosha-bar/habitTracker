@@ -7,4 +7,5 @@ type DailySnapshot struct {
 	Date   string
 	Habits datatypes.JSON
 	Count  uint
+	UserID uint `json:"userId"`
 }

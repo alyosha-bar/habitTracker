@@ -11,4 +11,5 @@ type Snapshot struct {
 	WeekStart time.Time
 	WeekEnd   time.Time
 	Habits    datatypes.JSON
+	UserID    uint `json:"userId"`
 }

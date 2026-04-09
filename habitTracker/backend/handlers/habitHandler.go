@@ -20,19 +20,19 @@ type HabitResponse struct {
 }
 
 type HabitService interface {
-	GetAllHabits() ([]models.Habit, error)
-	GetHabitByID(id uint64) (models.Habit, error)
-	LogHour(habitID uint64) error
-	MinusLogHour(habitID uint64) error
-	CreateHabit(habit models.Habit) (models.Habit, error)
-	DeleteHabit(id uint64) error
+	GetAllHabits(uid uint) ([]models.Habit, error)
+	GetHabitByID(id uint64, uid uint) (models.Habit, error)
+	LogHour(habitID uint64, uid uint) error
+	MinusLogHour(habitID uint64, uid uint) error
+	CreateHabit(habit models.Habit, uid uint) (models.Habit, error)
+	DeleteHabit(id uint64, uid uint) error
 
 	// Daily Habits
-	MarkDailyHabit(id uint64, completed bool) error
-	GetAllDailyHabits() ([]models.DailyHabit, error)
-	GetDailyHabitSnapshots(startDate time.Time, endDate time.Time) ([]models.DailySnapshot, error)
-	AddDailyHabit(name string) (models.DailyHabit, error)
-	DeleteDailyHabit(id uint64) error
+	MarkDailyHabit(id uint64, completed bool, uid uint) error
+	GetAllDailyHabits(uid uint) ([]models.DailyHabit, error)
+	GetDailyHabitSnapshots(startDate time.Time, endDate time.Time, uid uint) ([]models.DailySnapshot, error)
+	AddDailyHabit(name string, uid uint) (models.DailyHabit, error)
+	DeleteDailyHabit(id uint64, uid uint) error
 }
 
 type HabitHandler struct {
@@ -47,7 +47,20 @@ func (h *HabitHandler) GetHabits(c *gin.Context) {
 	// fetch all habits
 	fmt.Println("Fetching all habits")
 
-	habits, err := h.Service.GetAllHabits()
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
+	habits, err := h.Service.GetAllHabits(uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch habits"})
 		return
@@ -61,6 +74,21 @@ func (h *HabitHandler) GetHabit(c *gin.Context) {
 	// fetch specific habit based on habit_id
 	habit_id := c.Param("habit_id")
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
+	// pass user_id to service layer for authorization check
+
 	// cnvert habit_id to uint
 	habitID, err := strconv.ParseUint(habit_id, 10, 64)
 	if err != nil {
@@ -69,7 +97,7 @@ func (h *HabitHandler) GetHabit(c *gin.Context) {
 	}
 
 	// return habit as json
-	habit, err := h.Service.GetHabitByID(habitID)
+	habit, err := h.Service.GetHabitByID(habitID, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch habit"})
 		return
@@ -81,6 +109,19 @@ func (h *HabitHandler) LogHour(c *gin.Context) {
 	// get habit id and user id from request
 	habit_id := c.Param("id")
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	// convert habit id to uint64
 	habitID, err := strconv.ParseUint(habit_id, 10, 64)
 	if err != nil {
@@ -89,7 +130,7 @@ func (h *HabitHandler) LogHour(c *gin.Context) {
 	}
 
 	// increment hours for that entry
-	err = h.Service.LogHour(habitID)
+	err = h.Service.LogHour(habitID, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to log hour"})
 		return
@@ -101,6 +142,20 @@ func (h *HabitHandler) LogHour(c *gin.Context) {
 func (h *HabitHandler) MinusLogHour(c *gin.Context) {
 	// get habit id and user id from request
 	habit_id := c.Param("id")
+
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	// convert habit id to uint64
 	habitID, err := strconv.ParseUint(habit_id, 10, 64)
 	if err != nil {
@@ -109,7 +164,7 @@ func (h *HabitHandler) MinusLogHour(c *gin.Context) {
 	}
 
 	// decrement hours for that entry
-	err = h.Service.MinusLogHour(habitID)
+	err = h.Service.MinusLogHour(habitID, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to minus log hour"})
 		return
@@ -122,6 +177,19 @@ func (h *HabitHandler) MinusLogHour(c *gin.Context) {
 func (h *HabitHandler) CreateHabit(c *gin.Context) {
 	var newHabit models.Habit
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	// bind json to newHabit
 	if err := c.ShouldBindJSON(&newHabit); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request body"})
@@ -129,7 +197,7 @@ func (h *HabitHandler) CreateHabit(c *gin.Context) {
 	}
 
 	// create new habit
-	habit, err := h.Service.CreateHabit(newHabit)
+	habit, err := h.Service.CreateHabit(newHabit, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to create habit"})
 		return
@@ -144,13 +212,26 @@ func (h *HabitHandler) CreateHabit(c *gin.Context) {
 func (h *HabitHandler) DeleteHabit(c *gin.Context) {
 	habit_id := c.Param("id")
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	habitID, err := strconv.ParseUint(habit_id, 10, 64)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid habit ID"})
 		return
 	}
 
-	err = h.Service.DeleteHabit(habitID)
+	err = h.Service.DeleteHabit(habitID, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to delete habit"})
 		return
@@ -163,6 +244,19 @@ func (h *HabitHandler) DeleteHabit(c *gin.Context) {
 func (h *HabitHandler) MarkDailyHabit(c *gin.Context) {
 	habit_id := c.Param("id")
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	habitID, err := strconv.ParseUint(habit_id, 10, 64)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid habit ID"})
@@ -171,7 +265,7 @@ func (h *HabitHandler) MarkDailyHabit(c *gin.Context) {
 
 	completed := c.Query("completed") == "true"
 
-	err = h.Service.MarkDailyHabit(habitID, completed)
+	err = h.Service.MarkDailyHabit(habitID, completed, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to mark daily habit"})
 		return
@@ -182,7 +276,20 @@ func (h *HabitHandler) MarkDailyHabit(c *gin.Context) {
 }
 
 func (h *HabitHandler) GetDailyHabits(c *gin.Context) {
-	dailyHabits, err := h.Service.GetAllDailyHabits()
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
+	dailyHabits, err := h.Service.GetAllDailyHabits(uid)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch daily habits"})
@@ -193,6 +300,20 @@ func (h *HabitHandler) GetDailyHabits(c *gin.Context) {
 }
 
 func (h *HabitHandler) GetDailyHabitSnapshots(c *gin.Context) {
+
+	// get user_id from context
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
 
 	// Get week, month, and year from query params
 	y := util.QueryInt(c.Query("year"))
@@ -207,7 +328,7 @@ func (h *HabitHandler) GetDailyHabitSnapshots(c *gin.Context) {
 
 	fmt.Printf("Calculated date range - start: %s, end: %s\n", Start.Format("2006-01-02"), End.Format("2006-01-02"))
 
-	snapshots, err := h.Service.GetDailyHabitSnapshots(Start, End)
+	snapshots, err := h.Service.GetDailyHabitSnapshots(Start, End, uid)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch daily habit snapshots"})
@@ -219,6 +340,19 @@ func (h *HabitHandler) GetDailyHabitSnapshots(c *gin.Context) {
 
 func (h *HabitHandler) AddDailyHabit(c *gin.Context) {
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	// Get habit from query params
 	name := c.Query("name")
 	if name == "" {
@@ -226,7 +360,7 @@ func (h *HabitHandler) AddDailyHabit(c *gin.Context) {
 		return
 	}
 
-	habit, err := h.Service.AddDailyHabit(name)
+	habit, err := h.Service.AddDailyHabit(name, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to add daily habit"})
 		return
@@ -241,6 +375,19 @@ func (h *HabitHandler) AddDailyHabit(c *gin.Context) {
 func (h *HabitHandler) DeleteDailyHabit(c *gin.Context) {
 	habit_id := c.Param("id")
 
+	user_id, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// convert user_id to uint
+	uid, ok := user_id.(uint)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Failed to parse user ID"})
+		return
+	}
+
 	habitID, err := strconv.ParseUint(habit_id, 10, 64)
 
 	if err != nil {
@@ -248,7 +395,7 @@ func (h *HabitHandler) DeleteDailyHabit(c *gin.Context) {
 		return
 	}
 
-	err = h.Service.DeleteDailyHabit(habitID)
+	err = h.Service.DeleteDailyHabit(habitID, uid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to delete daily habit"})
 		return
