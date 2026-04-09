@@ -11,6 +11,7 @@ import (
 	"gorm.io/datatypes"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Habit struct {
@@ -18,20 +19,20 @@ type Habit struct {
 	Name        string `json:"name"`
 	TargetHours int    `json:"targetHours"`
 	LoggedHours int    `json:"loggedHours"`
+	UserID      uint   `gorm:"column:user_id" json:"user_id"`
 }
 
 type Snapshot struct {
-	ID        uint `gorm:"primaryKey"`
-	WeekStart time.Time
-	WeekEnd   time.Time
-	Habits    datatypes.JSON
+	ID        uint           `gorm:"primaryKey"`
+	WeekStart time.Time      `json:"week_start"`
+	WeekEnd   time.Time      `json:"week_end"`
+	Habits    datatypes.JSON `json:"habits"`
+	UserID    uint           `gorm:"column:user_id" json:"user_id"`
 }
 
 func main() {
-	// connect to DB
-	// load .env
+	// Load environment variables for local development
 	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
-		// Only load .env file locally
 		err := godotenv.Load(".env")
 		if err != nil {
 			log.Println("Warning: .env file not found (expected in local dev only)")
@@ -43,72 +44,95 @@ func main() {
 		log.Fatal("DB_URL environment variable not set.")
 	}
 
-	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	createSnapshot(db)
-	clearLoggedHours(db)
+	// Run both operations in a single transaction for safety.
+	// If snapshotting fails, hours won't be cleared.
+	// If clearing hours fails, the snapshot will be rolled back.
+	err = db.Transaction(func(tx *gorm.DB) error {
+		// 1. Create snapshots for all users
+		if err := createSnapshot(tx); err != nil {
+			return err
+		}
 
-}
+		// 2. Reset hours for all habits
+		if err := clearLoggedHours(tx); err != nil {
+			return err
+		}
 
-// FOR NOW --> just one user
-// FUTURE --> use go rountines to handle multiple users concurrently
+		return nil
+	})
 
-func createSnapshot(db *gorm.DB) {
-	// aggregate habits
-	var habits []Habit
-	result := db.Find(&habits)
-	if result.Error != nil {
-		log.Println("Error fetching habits:", result.Error)
-		return
+	if err != nil {
+		log.Fatalf("Maintenance job failed: %v", err)
 	}
 
-	// create snapshot
-	snapshotData := make([]map[string]interface{}, len(habits))
-	for i, habit := range habits {
-		snapshotData[i] = map[string]interface{}{
-			"name":        habit.Name,
-			"targetHours": habit.TargetHours,
-			"loggedHours": habit.LoggedHours,
+	fmt.Println("Snapshot created and hours reset successfully for all users.")
+}
+
+func createSnapshot(tx *gorm.DB) error {
+
+	// Truncate to start of day to keep snapshot windows clean (00:00:00)
+	now := time.Now().Truncate(24 * time.Hour)
+	weekStart := now.AddDate(0, 0, -7)
+
+	var allHabits []Habit
+
+	// Fetch all habits. Order by user_id for predictable processing.
+	if err := tx.Order("user_id").Find(&allHabits).Error; err != nil {
+		return fmt.Errorf("failed to fetch habits: %w", err)
+	}
+
+	if len(allHabits) == 0 {
+		log.Println("No habits found to snapshot.")
+		return nil
+	}
+
+	userHabitsMap := make(map[uint][]Habit)
+	for _, h := range allHabits {
+		userHabitsMap[h.UserID] = append(userHabitsMap[h.UserID], h)
+	}
+
+	var snapshots []Snapshot
+	for userID, habits := range userHabitsMap {
+		habitsJSON, err := json.Marshal(habits)
+		if err != nil {
+			log.Printf("Warning: Skipping user %d due to JSON error: %v", userID, err)
+			continue
+		}
+
+		snapshots = append(snapshots, Snapshot{
+			WeekStart: weekStart,
+			WeekEnd:   now,
+			Habits:    datatypes.JSON(habitsJSON),
+			UserID:    userID,
+		})
+	}
+
+	// Batch insert all snapshots at once for efficiency
+	if len(snapshots) > 0 {
+		if err := tx.Create(&snapshots).Error; err != nil {
+			return fmt.Errorf("failed to batch insert snapshots: %w", err)
 		}
 	}
-	fmt.Println(snapshotData)
 
-	// make JSON data
-	habitsJSON, err := json.Marshal(snapshotData)
-	if err != nil {
-		log.Println("Error marshalling habits to JSON:", err)
-		return
-	}
-
-	snapshot := Snapshot{
-		WeekStart: time.Now().AddDate(0, 0, -6),
-		WeekEnd:   time.Now(),
-		Habits:    datatypes.JSON(habitsJSON),
-	}
-
-	fmt.Println(snapshot)
-
-	// insert into snapshots
-	if err := db.Create(&snapshot).Error; err != nil {
-		log.Println("Error creating snapshot:", err)
-		return
-	}
-
-	fmt.Println("Snapshot created successfully")
+	return nil
 }
 
-func clearLoggedHours(db *gorm.DB) {
-	// reset logged hours for all habits
-	if err := db.Model(&Habit{}).Where("1 = 1").Update("logged_hours", 0).Error; err != nil {
-		log.Println("Error resetting logged hours:", err)
-		return
+func clearLoggedHours(tx *gorm.DB) error {
+	result := tx.Model(&Habit{}).Where("logged_hours > ?", 0).Updates(map[string]interface{}{
+		"logged_hours": 0,
+	})
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to reset logged hours: %w", result.Error)
 	}
-	fmt.Println("Logged hours reset successfully")
+
+	log.Printf("Successfully reset hours for %d habits.", result.RowsAffected)
+	return nil
 }
-
-// func sendReportEmails(db *gorm.DB) {
-
-// }

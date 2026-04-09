@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/alyosha-bar/golang-react/database"
 	"github.com/alyosha-bar/golang-react/handlers"
+	"github.com/alyosha-bar/golang-react/middleware"
 	"github.com/alyosha-bar/golang-react/repository"
 	"github.com/alyosha-bar/golang-react/services"
 	"github.com/gin-gonic/gin"
@@ -13,16 +14,27 @@ func SetupRoutes(router *gin.Engine) {
 	// Initialise repositories
 	habitRepo := repository.NewHabitRepository(database.DB)
 	todoRepo := repository.NewTodoRepository(database.DB)
+	authRepo := repository.NewAuthRepository(database.DB)
 
 	// Initialise services
 	habitService := services.NewHabitService(habitRepo)
 	todoService := services.NewTodoService(todoRepo)
+	authService := services.NewAuthService(authRepo)
 
 	// Initialise handlers
 	habitHandler := handlers.NewHabitHandler(habitService)
 	todoHandler := handlers.NewTodoHandler(todoService)
+	authHandler := handlers.NewAuthHandler(authService)
+
+	// Auth Routes
+	authRoutes := router.Group("/auth")
+	{
+		authRoutes.POST("/login", authHandler.Login)
+		authRoutes.POST("/signup", authHandler.SignUp)
+	}
 
 	habitRoutes := router.Group("/habits")
+	habitRoutes.Use(middleware.AuthMiddleware())
 	{
 		habitRoutes.PUT("/log/:id", habitHandler.LogHour)
 
@@ -50,6 +62,7 @@ func SetupRoutes(router *gin.Engine) {
 	}
 
 	todoRoutes := router.Group("/todos")
+	todoRoutes.Use(middleware.AuthMiddleware())
 	{
 		// Define todo routes here
 		todoRoutes.GET("/all", todoHandler.GetAllTodos)
