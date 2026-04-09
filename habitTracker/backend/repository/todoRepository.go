@@ -33,7 +33,7 @@ func (r *TodoRepository) AddToDo(todo models.Todo, uid uint) error {
 // mark a Todo as completed
 func (r *TodoRepository) CompleteToDo(id uint64, uid uint) error {
 	var todo models.Todo
-	result := r.DB.Select("id", "task", "completed").Where("user_id = ?", uid).First(&todo, id)
+	result := r.DB.Select("id", "task", "completed", "user_id").Where("user_id = ?", uid).First(&todo, id)
 	if result.Error != nil {
 		return result.Error
 	}

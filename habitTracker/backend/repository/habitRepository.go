@@ -47,7 +47,7 @@ func (r *HabitRepository) GetHabitByID(id uint64, uid uint) (models.Habit, error
 // Log hours for a Habit --> SLOW right now, needs optimisation
 func (r *HabitRepository) LogHour(id uint64, uid uint) error {
 	var habit models.Habit
-	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id).Where("user_id = ?", uid)
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours", "user_id").First(&habit, id).Where("user_id = ?", uid)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -58,7 +58,7 @@ func (r *HabitRepository) LogHour(id uint64, uid uint) error {
 
 func (r *HabitRepository) MinusLogHour(id uint64, uid uint) error {
 	var habit models.Habit
-	result := r.DB.Select("id", "name", "target_hours", "logged_hours").First(&habit, id).Where("user_id = ?", uid)
+	result := r.DB.Select("id", "name", "target_hours", "logged_hours", "user_id").First(&habit, id).Where("user_id = ?", uid)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -90,7 +90,7 @@ func (r *HabitRepository) DeleteHabit(id uint64, uid uint) error {
 // Daily Habits Repository function
 func (r *HabitRepository) MarkDailyHabit(id uint64, completed bool, uid uint) error {
 	var habit models.DailyHabit
-	result := r.DB.Select("id", "name", "completed").First(&habit, id).Where("user_id = ?", uid)
+	result := r.DB.Select("id", "name", "completed", "user_id").First(&habit, id).Where("user_id = ?", uid)
 	if result.Error != nil {
 		return result.Error
 	}

@@ -15,12 +15,14 @@ type Todo struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	Task      string `json:"task"`
 	Completed bool   `json:"completed"`
+	UserID    uint   `gorm:"column:user_id" json:"user_id"`
 }
 
 type DailyHabit struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	Name      string `json:"name"`
 	Completed bool   `json:"completed"`
+	UserID    uint   `gorm:"column:user_id" json:"user_id"`
 }
 
 func clearCompletedTodos(db *gorm.DB) {
@@ -37,53 +39,73 @@ func clearCompletedTodos(db *gorm.DB) {
 }
 
 func saveDailyHabitSnapshot(db *gorm.DB) {
+	log.Println("Saving daily habit snapshots for all users...")
 
-	log.Println("Saving daily habit snapshot...")
-
-	// get date asap to capture correct date even if the cron job runs a bit later than scheduled
+	// 1. Get the date string
 	date := time.Now().Format("2006-01-02")
 
-	// store daily habits and their completed status into a jsonb column in the DailyHabitSnapshot table
 	type DailySnapshot struct {
 		ID     uint   `gorm:"primaryKey" json:"id"`
 		Date   string `json:"date"`
 		Count  int    `json:"count"`
 		Habits string `json:"habits"`
+		UserID uint   `gorm:"column:user_id" json:"user_id"`
 	}
 
-	var habits []DailyHabit
-	if err := db.Find(&habits).Error; err != nil {
+	// 2. Fetch all habits from the database
+	var allHabits []DailyHabit
+	if err := db.Find(&allHabits).Error; err != nil {
 		log.Println("Error fetching habits:", err)
 		return
 	}
 
-	// Convert habits to JSON string
-	habitsJSON, err := json.Marshal(habits)
-	if err != nil {
-		log.Println("Error converting habits to JSON:", err)
+	if len(allHabits) == 0 {
+		log.Println("No habits found to snapshot.")
 		return
 	}
 
-	// count the number of completed habits for the day where completed = true
-	count := 0
-	for _, habit := range habits {
-		if habit.Completed {
-			count++
+	// 3. Group habits by UserID
+	// This ensures we create one snapshot per user rather than one global snapshot
+	userHabitsMap := make(map[uint][]DailyHabit)
+	for _, h := range allHabits {
+		userHabitsMap[h.UserID] = append(userHabitsMap[h.UserID], h)
+	}
+
+	// 4. Create a snapshot for each user
+	var snapshots []DailySnapshot
+	for userID, habits := range userHabitsMap {
+		// Calculate completed count for THIS user
+		count := 0
+		for _, habit := range habits {
+			if habit.Completed {
+				count++
+			}
+		}
+
+		// Convert THIS user's habits to JSON
+		habitsJSON, err := json.Marshal(habits)
+		if err != nil {
+			log.Printf("Error converting habits to JSON for user %d: %v", userID, err)
+			continue
+		}
+
+		snapshots = append(snapshots, DailySnapshot{
+			Date:   date,
+			Count:  count,
+			Habits: string(habitsJSON),
+			UserID: userID, // Explicitly setting the owner of this snapshot
+		})
+	}
+
+	// 5. Batch insert all snapshots in one transaction
+	if len(snapshots) > 0 {
+		if err := db.Create(&snapshots).Error; err != nil {
+			log.Println("Error saving daily habit snapshots:", err)
+			return
 		}
 	}
 
-	snapshot := DailySnapshot{
-		Date:   date,
-		Count:  count,
-		Habits: string(habitsJSON),
-	}
-
-	if err := db.Create(&snapshot).Error; err != nil {
-		log.Println("Error saving daily habit snapshot:", err)
-		return
-	}
-
-	log.Println("Daily habit snapshot saved successfully.")
+	log.Printf("Daily habit snapshots saved successfully for %d users.", len(snapshots))
 }
 
 func resetDailyHabits(db *gorm.DB) {
