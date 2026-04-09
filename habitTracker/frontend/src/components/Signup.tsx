@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../api/config";
 
 
 const Signup = () => {
@@ -25,7 +26,7 @@ const Signup = () => {
     const signup = async () => {
         // Implement signup logic, e.g., send POST request to /api/auth/signup
 
-        const response = await fetch('/api/auth/signup', {
+        const response = await fetch(`${API_BASE}/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

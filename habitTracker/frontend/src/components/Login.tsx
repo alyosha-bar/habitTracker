@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useAuthStore from "../stores/auth";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../api/config";
 
 
 const Login = () => {
@@ -26,7 +27,7 @@ const Login = () => {
 
     const login = async () => {
         
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch(`${API_BASE}/auth/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
