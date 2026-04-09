@@ -53,24 +53,31 @@ const Signup = () => {
 
 
     return ( 
-        <div>
-            <h1>Signup</h1>
-            {/* Signup form goes here */}
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit">Sign Up</button>
-            </form>
+        <div className="login-container">
+            <div className="login">
+                <h1>Signup</h1>
+
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <div className="btn-group">
+                        <button type="submit">Signup</button>
+                        <button type="button" onClick={() => navigate('/login')}>Go to Login</button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }

@@ -59,27 +59,31 @@ const Login = () => {
 
 
     return ( 
-        <div className="login">
-            <h1>Login</h1>
+        <div className="login-container">
+            <div className="login">
+                <h1>Login</h1>
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit">Login</button>
-            </form>
-
-            <div>{authStore.username}</div>
-
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <div className="btn-group">
+                        <button type="submit">Login</button>
+                        <button type="button" onClick={() => navigate('/signup')}>Go to Signup</button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }
