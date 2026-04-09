@@ -271,13 +271,14 @@ const MainPage = () => {
             <div className="app-layout">
                 
                 <div className="left-panel">
-                    <button onClick={() => useAuthStore.getState().clearAuthData()}>Logout</button>
+                    <button className="logout-button" onClick={() => useAuthStore.getState().clearAuthData()}>Logout</button>
                     <div className="habit-tracker">
                         <div className='title-group'>
                             {username && <h1 className='title'>Habit Tracker, {username} </h1> || <h1 className='title'>Habit Tracker</h1>}
                             <button onClick={() => setModalOpen(true)}> Add Habit </button>
                         </div>
-                    {habitsState.map(habit => (
+                    {habitsState && habitsState.length > 0 ? (
+                        habitsState.map(habit => (
                         <div key={habit.id} className="habit">
                         <div className="habit-text-area">
                             <div>
@@ -304,7 +305,9 @@ const MainPage = () => {
                         </div>
                         
                         </div>
-                    ))}
+                        ))) : (
+                        <p className="empty-message">No habits added yet. Start by creating one!</p>
+                        )}
                     </div>
                 </div>
 
@@ -319,23 +322,27 @@ const MainPage = () => {
                         />
                         <button type="submit">Add</button>
                     </form>
-                    {toDosState.map(todo => (
-                    <div key={todo.id} className="todo-item">
-                        <div>
-                        <input
-                            type="checkbox"
-                            checked={todo.completed}
-                            onChange={() => {
-                            markToDoComplete(todo.id);
-                            }}
-                        />
-                        <span>{todo.task}</span>
+                    {toDosState.length > 0 ? (
+                        toDosState.map(todo => (
+                        <div key={todo.id} className="todo-item">
+                            <div>
+                            <input
+                                type="checkbox"
+                                checked={todo.completed}
+                                onChange={() => {
+                                markToDoComplete(todo.id);
+                                }}
+                            />
+                            <span>{todo.task}</span>
+                            </div>
+                            <div className='icon' onClick={() => deleteToDo(todo.id)}>
+                            <FontAwesomeIcon icon={faTrash} />
+                            </div> 
                         </div>
-                        <div className='icon' onClick={() => deleteToDo(todo.id)}>
-                        <FontAwesomeIcon icon={faTrash} />
-                        </div> 
-                    </div>
-                    ))}
+                        ))
+                    ) : (
+                    <p className="empty-message">No to-dos added yet.</p>
+                    )}
                 </div>
                 <div className="modal-host">
                     <AddHabitModal isOpen={modalOpen} onClose={() => { setModalOpen(false) }} onSubmit={createHabit} />

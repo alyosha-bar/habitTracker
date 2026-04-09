@@ -166,40 +166,44 @@ const DailyHabits = () => {
 
     return (
         <div className="daily-habits-container">
-        <div className="daily-habits-header">
-            <h2>Daily Habits</h2>
-            {/* <button onClick={() => console.log(habits)}>Log Habits </button>
-            <button onClick={() => console.log(pastHabits)}>Log Past Habits </button> */}
-            <form onSubmit={addDailyHabit} className="todo-form"> 
-                <input 
-                    type="text" 
-                    placeholder="New Daily Habit"
-                    value={newDailyHabit}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDailyHabit(e.target.value)}
-                />
-                <button type="submit"> Add </button>
-            </form>
-        </div>
+            <div className="daily-habits-header">
+                <h2>Daily Habits</h2>
+                <form onSubmit={addDailyHabit} className="todo-form"> 
+                    <input 
+                        type="text" 
+                        placeholder="New Daily Habit"
+                        value={newDailyHabit}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDailyHabit(e.target.value)}
+                    />
+                    <button type="submit"> Add </button>
+                </form>
+            </div>
 
-        {/* Simple list of habits with a completed toggle */}
+            {/* Simple list of habits with a completed toggle */}
             <div className="daily-habits">
-                {habits && habits.map((habit) => (
+            {habits && habits.length > 0 ? (
+                habits.map((habit) => (
                 <div key={habit.id} className="daily-habit-item">
                     <div className="daily-habit-layout">
-                        <div>
-                            <input
-                                type="checkbox"
-                                checked={habit.completed}
-                                onChange={() => toggleHabit(habit.id)}
-                            />
-                            <span>{habit.name}</span>
-                        </div>
-                        <div className='icon' onClick={() => deleteHabit(habit.id)}>
-                            <FontAwesomeIcon icon={faTrash} />
-                        </div>
+                    <div>
+                        <input
+                        type="checkbox"
+                        checked={habit.completed}
+                        onChange={() => toggleHabit(habit.id)}
+                        />
+                        <span>{habit.name}</span>
+                    </div>
+                    <div className="icon" onClick={() => deleteHabit(habit.id)}>
+                        <FontAwesomeIcon icon={faTrash} />
+                    </div>
                     </div>
                 </div>
-                ))}
+                ))
+            ) : (
+                <div className="empty-message">
+                    <p>No habits added yet. Start by creating one!</p>
+                </div>
+            )}
             </div>
 
             {/* Graph section */}

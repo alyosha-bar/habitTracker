@@ -149,6 +149,23 @@ body {
   font-family: var(--font-label);
 }
 
+.logout-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--color-primary);
+  border: none;
+  color: #fff;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: var(--font-label);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 0.75rem;
+  transition: background 0.15s ease, filter 0.15s ease;
+}
+
 .habit-buttons {
   display: flex;
   gap: 0.4rem;
@@ -649,6 +666,17 @@ body {
   font-family: var(--font-label);
 }
 
+.empty-message {
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 13px; 
+  color: var(--color-text-secondary);
+}
+
 /* Responsive layout */
 @media (max-width: 900px) {
   .app-layout {
@@ -657,6 +685,10 @@ body {
       "left"
       "right"
       "bottom";
+  }
+
+  .app-layout {
+    margin-top: 65px;
   }
 }
 
@@ -679,5 +711,9 @@ body {
 
   .daily-habits {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  
+  .app-layout {
+    margin-top: 65px;
   }
 }

@@ -98,6 +98,94 @@ export default function HabitChart({ todaysHabits, pastHabits, toggleGraphRange 
     setGraphRange((prev) => (prev === "week" ? "month" : "week"));
   }
 
+
+  // if no past habits, but some habits today show a message
+  if (pastHabits.length === 0 && todaysHabits.length != 0) {
+    return (
+      <div style={{ padding: "1.5rem 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+        <button 
+              onClick={handleGraphChange} 
+              style={{
+                // Layout & Sizing
+                padding: "2px 8px",
+                fontSize: "11px",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.02em",
+                
+                // Visuals
+                backgroundColor: "rgba(99, 102, 241, 0.15)",
+                color: "#a5b4fc",
+                border: "1px solid rgba(99, 102, 241, 0.35)",
+                borderRadius: "2px",
+                
+                // Interaction
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                outline: "none",
+                display: "flex",
+                alignItems: "center"
+              }}
+              // Adding a hover effect via inline event listeners
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.25)";
+                e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.5)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.15)";
+                e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.35)";
+              }}
+            > 
+              {graphRange} 
+            </button>
+        <p style={{ margin: 0, fontSize: 13, color: "var(--color-text-secondary)" }}>No past habits recorded. Chart will be available in the future. </p>
+      </div>
+    );
+  }
+
+  if (pastHabits.length === 0) {
+    return (
+      <div style={{ padding: "1rem 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+        <button 
+              onClick={handleGraphChange} 
+              style={{
+                // Layout & Sizing
+                padding: "2px 8px",
+                fontSize: "11px",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.02em",
+                
+                // Visuals
+                backgroundColor: "rgba(99, 102, 241, 0.15)",
+                color: "#a5b4fc",
+                border: "1px solid rgba(99, 102, 241, 0.35)",
+                borderRadius: "2px",
+                
+                // Interaction
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                outline: "none",
+                display: "flex",
+                alignItems: "center"
+              }}
+              // Adding a hover effect via inline event listeners
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.25)";
+                e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.5)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.15)";
+                e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.35)";
+              }}
+            > 
+              {graphRange} 
+            </button>
+      </div>
+    );
+  }
+
+
   return (
     <div style={{ padding: "1.5rem 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1.5rem" }}>
