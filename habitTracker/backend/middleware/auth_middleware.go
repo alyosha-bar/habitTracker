@@ -10,10 +10,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var jwtSecret = []byte(os.Getenv("JWT_SECRET")) // Replace with ENV variable
-
-// RQs: Authenticate user, set user ID in context, handle token expiration, etc.
-// No roles needed
+var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 func AuthMiddleware() gin.HandlerFunc {
 

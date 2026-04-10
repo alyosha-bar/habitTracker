@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
@@ -31,6 +32,7 @@ func ConnectDB() {
 	// 2. Open connection with GORM
 	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{
 		PrepareStmt: true, // Optimization: caches prepared statements for faster repetitive queries
+		Logger:      logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)

@@ -111,7 +111,6 @@ func (r *HabitRepository) GetAllDailyHabits(uid uint) ([]models.DailyHabit, erro
 }
 
 func (r *HabitRepository) GetDailyHabitSnapshots(startDate time.Time, endDate time.Time, uid uint) ([]models.DailySnapshot, error) {
-
 	// strip time component from startDate and endDate to ensure we are comparing only dates
 	startDateStr := startDate.Format("2006-01-02")
 	endDateStr := endDate.Format("2006-01-02")

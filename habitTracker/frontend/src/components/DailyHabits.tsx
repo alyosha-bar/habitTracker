@@ -65,7 +65,7 @@ const DailyHabits = () => {
             { 
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzU3NjQ3NzMsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiQWx5b3NoYSJ9.5LRoiFNDRudZLGGfN5OdJ2D9F_782rktzwONut1vX-8"
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
                 },
             }
         );
@@ -90,7 +90,7 @@ const DailyHabits = () => {
             method: "PUT",
             headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzU3NjQ3NzMsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiQWx5b3NoYSJ9.5LRoiFNDRudZLGGfN5OdJ2D9F_782rktzwONut1vX-8"
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
                 },
         });
 
@@ -122,7 +122,7 @@ const DailyHabits = () => {
             method: "POST",
             headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzU3NjQ3NzMsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiQWx5b3NoYSJ9.5LRoiFNDRudZLGGfN5OdJ2D9F_782rktzwONut1vX-8"
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
             },
         });
 
