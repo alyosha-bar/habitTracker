@@ -149,10 +149,15 @@ body {
   font-family: var(--font-label);
 }
 
-.logout-button {
+.nav-buttons {
   position: absolute;
   top: 16px;
   right: 16px;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-buttons button {
   background: var(--color-primary);
   border: none;
   color: #fff;

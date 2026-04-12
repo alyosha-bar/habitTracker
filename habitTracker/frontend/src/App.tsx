@@ -5,18 +5,24 @@ import SignupPage from './pages/SignupPage'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { useEffect } from 'react'
 import useAuthStore from './stores/auth'
+import Hyperfocus from './pages/Hyperfocus'
 
 
 
 function App() {
+  const setAuthData = useAuthStore((state) => state.setAuthData);
+  const finishHydration = useAuthStore((state) => state.finishHydration); // You'll need to add this action
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const username = localStorage.getItem('username') 
-    if (token) {
-      // If token exists, set the auth data in the store
-      useAuthStore.getState().setAuthData(token, username)
-    }}, [])
+      const token = localStorage.getItem('token');
+      const username = localStorage.getItem('username');
+      
+      if (token) {
+          setAuthData(token, username);
+      }
+      
+      finishHydration();
+  }, [setAuthData, finishHydration]); 
 
 
   return (
@@ -25,6 +31,11 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route  path="/" element={<MainPage />} />
       </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route  path="/hyperfocus" element={<Hyperfocus />} />
+      </Route>
+
       <Route path='/login' element={<LoginPage />}></Route>
       <Route path='/signup' element={<SignupPage />}></Route>
         

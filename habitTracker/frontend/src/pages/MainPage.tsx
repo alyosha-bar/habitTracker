@@ -8,6 +8,9 @@ import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
 import { useEffect, useState } from "react";
 import { API_BASE } from "../api/config";
 import useAuthStore from "../stores/auth";
+import HyperfocusModal from "../components/HyperfocusModal";
+import { useNavigate } from "react-router-dom";
+import StudyDropdown from "../components/StudyDropdown";
 
 type Habit = {
   id: number
@@ -260,6 +263,26 @@ const MainPage = () => {
         setHabitsState([...habitsState, data.newHabit]);
     }
 
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const navigate = useNavigate()
+
+    const handleTodoClick = async () => {
+
+        console.log("yoyoyo")
+
+        // open modal
+        setIsOpen(true)
+    }
+
+    const onClose = () => {
+        setIsOpen(false)
+    }
+
+    const onSubmit = (todo:string, time:number) => {
+        // redirect to hyperfocus page
+        navigate(`/hyperfocus?task=${todo}&initialMinutes=${time}`)
+    }
+
 
     const username = useAuthStore((state) => state.username);
 
@@ -271,7 +294,10 @@ const MainPage = () => {
             <div className="app-layout">
                 
                 <div className="left-panel">
-                    <button className="logout-button" onClick={() => useAuthStore.getState().clearAuthData()}>Logout</button>
+                    <div className="nav-buttons">
+                        <StudyDropdown />
+                        <button className="" onClick={() => useAuthStore.getState().clearAuthData()}>Logout</button>
+                    </div>
                     <div className="habit-tracker">
                         <div className='title-group'>
                             {username && <h1 className='title'>Habit Tracker, {username} </h1> || <h1 className='title'>Habit Tracker</h1>}
@@ -334,18 +360,22 @@ const MainPage = () => {
                                 }}
                             />
                             <span>{todo.task}</span>
+                            
                             </div>
                             <div className='icon' onClick={() => deleteToDo(todo.id)}>
-                            <FontAwesomeIcon icon={faTrash} />
+                                <FontAwesomeIcon icon={faTrash} />
                             </div> 
+                            
                         </div>
                         ))
                     ) : (
                     <p className="empty-message">No to-dos added yet.</p>
                     )}
+                    <button onClick={handleTodoClick}> Hyperfocus </button>
                 </div>
                 <div className="modal-host">
                     <AddHabitModal isOpen={modalOpen} onClose={() => { setModalOpen(false) }} onSubmit={createHabit} />
+                    <HyperfocusModal isOpen={isOpen} onClose={onClose} onSubmit={onSubmit}/>
                 </div>
                 <div className="bottom-panel daily-panel">
                     <DailyHabits />
