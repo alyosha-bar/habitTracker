@@ -263,26 +263,6 @@ const MainPage = () => {
         setHabitsState([...habitsState, data.newHabit]);
     }
 
-    const [isOpen, setIsOpen] = useState<boolean>(false)
-    const navigate = useNavigate()
-
-    const handleTodoClick = async () => {
-
-        console.log("yoyoyo")
-
-        // open modal
-        setIsOpen(true)
-    }
-
-    const onClose = () => {
-        setIsOpen(false)
-    }
-
-    const onSubmit = (todo:string, time:number) => {
-        // redirect to hyperfocus page
-        navigate(`/hyperfocus?task=${todo}&initialMinutes=${time}`)
-    }
-
 
     const username = useAuthStore((state) => state.username);
 
@@ -371,11 +351,9 @@ const MainPage = () => {
                     ) : (
                     <p className="empty-message">No to-dos added yet.</p>
                     )}
-                    <button onClick={handleTodoClick}> Hyperfocus </button>
                 </div>
                 <div className="modal-host">
                     <AddHabitModal isOpen={modalOpen} onClose={() => { setModalOpen(false) }} onSubmit={createHabit} />
-                    <HyperfocusModal isOpen={isOpen} onClose={onClose} onSubmit={onSubmit}/>
                 </div>
                 <div className="bottom-panel daily-panel">
                     <DailyHabits />

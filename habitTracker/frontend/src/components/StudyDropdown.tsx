@@ -1,8 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
+import HyperfocusModal from './HyperfocusModal';
+import { useNavigate } from 'react-router-dom';
 
 const StudyDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [hyperfocusFlag, setHyperfocusFlag] = useState<boolean>(false)
+  // const [pomodoroFlag, setpomodoroFlag] = useState<boolean>(false)
+  // const [waterfallFlag, setWaterfallFlag] = useState<boolean>(false)
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -16,10 +22,31 @@ const StudyDropdown = () => {
   }, []);
 
   const techniques = [
-    { name: 'Hyperfocus', desc: 'No distractions for a short time.' },
-    { name: 'Pomodoro', desc: '25 min work / 5 min break.' },
+    { name: 'Hyperfocus', desc: 'Blocks distractions for a short time.' },
+    { name: 'Pomodoro', desc: '25 min work / 5 min break. And repeat.' },
     { name: 'Waterfall', desc: '50/10 40/10 30/10 20/10 work/break split' },
   ];
+
+  const handleClick = (name : string) => {
+
+    // open hyperfocus modal
+    if (name === 'Hyperfocus') {
+      setHyperfocusFlag(true)
+    }
+
+  }
+
+  const onClose = () => {
+    setHyperfocusFlag(false)
+  }
+
+  const navigate = useNavigate()
+
+  const onSubmit = (todo:string, time:number) => {
+    // redirect to hyperfocus page
+    navigate(`/hyperfocus?task=${todo}&initialMinutes=${time}`)
+  }
+
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }} ref={dropdownRef}>
@@ -34,13 +61,14 @@ const StudyDropdown = () => {
       {isOpen && (
         <ul style={dropdownMenuStyle}>
           {techniques.map((tech) => (
-            <li key={tech.name} style={itemStyle} onClick={() => setIsOpen(false)}>
+            <li key={tech.name} style={itemStyle} onClick={() => handleClick(tech.name)}>
               <div style={itemNameStyle}>{tech.name}</div>
               <div style={itemDescStyle}>{tech.desc}</div>
             </li>
           ))}
         </ul>
       )}
+      <HyperfocusModal isOpen={hyperfocusFlag} onClose={onClose} onSubmit={onSubmit}/>
     </div>
   );
 };

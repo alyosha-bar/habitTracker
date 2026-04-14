@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+// Hyperfocus improvement --> create a browser extension which blocks blacklisted websites
+// Habit tracker (Hyperfocus mode) talks to the browser extension and tells it to "activate"
+
+
 const HyperFocus = () => {
   const [searchParams] = useSearchParams();
 
@@ -54,7 +58,14 @@ const HyperFocus = () => {
 
             <div style={controlsStyle}>
             <button 
-                onClick={() => setIsActive(!isActive)} 
+                onClick={() => {
+                  if (isActive) {
+                    console.log("Unlocking blacklisted applications")
+                  } else {
+                    console.log("Blocking blacklisted applications")
+                  }
+                  setIsActive(!isActive)
+                }} 
                 style={{
                 ...buttonBase,
                 backgroundColor: isActive ? 'var(--color-surface-elevated)' : 'var(--color-primary)',
