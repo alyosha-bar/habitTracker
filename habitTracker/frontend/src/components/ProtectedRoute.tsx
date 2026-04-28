@@ -6,11 +6,16 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ redirectTo = "/login" }: ProtectedRouteProps) => {
-  const { isAuthenticated, username } = useAuthStore();
+  const { isAuthenticated, username, token } = useAuthStore();
 
-//   if (isLoading) {
-//     return <div>Loading...</div>; // or null/spinner
-//   }
+  // check if token is still valid
+  if (token) {
+    const tokenExpiration = JSON.parse(atob(token.split('.')[1])).exp;
+
+    if (Date.now() >= tokenExpiration * 1000) {
+      useAuthStore.getState().clearAuthData();
+    }
+  }
 
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} replace />;
